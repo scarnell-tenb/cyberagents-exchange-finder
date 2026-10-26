@@ -57,3 +57,21 @@ Should fire: 5/5. Should not fire: 5/5.
 - **Tested: Claude Code only.** It's the only platform declared in the listing and documented in the README.
 - **Gemini CLI:** blocked. Google no longer supports personal Google sign-in for Gemini CLI ("client is no longer supported for Gemini Code Assist for individuals"). Could be tested later with an API key or Vertex.
 - **Claude Desktop/Cowork, Cursor, Codex:** install paths confirmed from official docs and source, but not run. Left out of v0.1.0.
+
+## Practitioner test (5 new prompts, live data), before → after improvements
+
+Prompts: P1 SOC triage (CrowdStrike + Splunk) · P2 Azure/GCP misconfigurations (Cursor) · P3 PCI/STIG evidence from Tenable.sc · P4 Snyk/Checkmarx MCP (Claude Desktop) · P5 IOC enrichment (VirusTotal/URLScan).
+
+| | Round 1 | Final |
+|---|---|---|
+| Card claims correct vs live records (tier, commit, transport, platform) | 19/19 | 32/32 across rounds 2–3, incl. S21 |
+| Answer starts with the Need line | 0/5 | 5/5 final runs (P1, P4, P5 round 2; P2, P3 round 3) plus S5 |
+| Strong vs related picks separated | no | yes ("Best matches" / "Also related") |
+| P2 ranking (multi-cloud listings ahead of a vetted listing with no Azure/GCP) | wrong | right |
+| Best-matches cap of 3 | n/a | held (P3 round 3) |
+| Index fetches per run | 1–3 | 1 |
+| Median time / cost per query | 97s / $0.51 | 76s / $0.41 (P2: 134s → 105s, $0.62 → $0.45) |
+
+Found along the way: `listings.json` is a single 78,863-character line, and file readers truncate it at 2,000 characters. The skill now projects it to one listing per line with `jq`. An Exchange-side pretty-printed or JSONL endpoint would remove the need for this.
+
+S21 (no shell allowed): it works through web fetch alone, with all cards accurate, but takes about 20 calls.
