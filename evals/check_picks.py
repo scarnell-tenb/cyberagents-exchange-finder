@@ -43,6 +43,8 @@ def check(text, index):
             failures.append(f"{ref}: missing or wrong UTM ({query or 'none'})")
     for host in set(ANY_URL_HOST.findall(text)) - ALLOWED_HOSTS:
         failures.append(f"link to unexpected host: {host}")
+    if links and not text.lstrip().startswith("**Need:**"):
+        failures.append("answer doesn't start with the **Need:** line")
     if links and DISCLAIMER not in text:
         failures.append("disclaimer missing or altered")
     if TABLE_ROW.search(text):

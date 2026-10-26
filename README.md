@@ -49,14 +49,14 @@ Version 0.1.0 is tested on Claude Code only. `SKILL.md` follows the open Agent S
 
 ## What it outputs
 
-A one-line restatement of your need, an **at a glance** list (one line per pick: type, tier, whether it changes systems, whether it runs on your tool), then a card per pick. Example:
+The answer opens with a one-line restatement of your need and an **at a glance** list (one line per pick: type, tier, whether it changes systems, whether it runs on your tool). Then come:
+
+- **Best matches:** up to 3 cards (say *more* for up to 5), for picks that fit your task and your tools.
+- **Also related:** up to 2 cards for picks that cover only part of your need, each saying what's missing.
+
+Example card:
 
 ```
-**Need:** compliance dashboards · Tenable.sc · Claude Code
-
-**At a glance**
-1. Tenable SC Reporting Assistant — skill · contributed · changes systems · runs on Claude Code
-
 1. **Tenable SC Reporting Assistant** — skill · [listing](https://exchange.tenable.com/skills/tenable-sc-reporting-assistant?utm_source=exchange-finder&utm_medium=skill) · [repo](https://github.com/hamzhk15/tenable-sc-reporting-assistant)
    - Does: Generates and uploads Tenable SC dashboards, PDF reports, and CSV exports via tested XML builders
    - Fits you: builds the Tenable.sc compliance dashboards you asked for
@@ -65,7 +65,7 @@ A one-line restatement of your need, an **at a glance** list (one line per pick:
    - Setup: runs on your tool ✓ · needs Tenable SC credentials · invoke `/tenable-sc-reporting-assistant`
 ```
 
-A **⚠ Watch** line appears only when there's something to flag: `repo archived`, `repo owner X ≠ listed author Y`, `no pushes in 12+ months`, `code has changed since review (N commits ahead)`, `reviewed commit not found in repo`, `repo not found`, `repo status unknown`, suspicious listing text, or a listing `url` that points somewhere other than the Exchange.
+A **⚠ Watch** line appears only when there's something to flag: `repo archived`, `repo owner X ≠ listed author Y`, `no pushes in 12+ months`, `no code detected in repo` (agents and MCP servers), `code has changed since review (N commits ahead)`, `reviewed commit not found in repo`, `repo not found`, `repo status unknown`, suspicious listing text, or a listing `url` that points somewhere other than the Exchange.
 
 Every answer ends with: *"Community-built listings, presented for evaluation, not endorsement. Review the code and permissions before using in production."*
 

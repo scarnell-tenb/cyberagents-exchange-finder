@@ -10,6 +10,9 @@ block="$(awk -v id="### $id" '$0==id{f=1;next} /^### /{f=0} f' "$repo/evals/scen
 prompt="$(printf '%s\n' "$block" | sed -n 's/^prompt: //p')"
 prompt="${prompt//\{FIXTURES\}/$fixtures}"
 data="$(printf '%s\n' "$block" | sed -n 's/^data: //p')"
+tools="$(printf '%s\n' "$block" | sed -n 's/^tools: //p')"
+[ -n "$tools" ] || tools='Bash(curl:*) Read WebFetch Skill'
+read -r -a tool_args <<< "$tools"
 
 out="$repo/evals/runs/$id${mode:+-baseline}"
 rm -rf "$out"; mkdir -p "$out"
@@ -21,7 +24,7 @@ if [ "$mode" != "--baseline" ]; then
 fi
 
 (cd "$work" && claude -p "$prompt" --output-format stream-json --verbose \
-  --allowedTools "Bash(curl:*)" "Read" "WebFetch" "Skill" < /dev/null > "$out/run.jsonl" 2> "$out/stderr.log") || true
+  --allowedTools "${tool_args[@]}" < /dev/null > "$out/run.jsonl" 2> "$out/stderr.log") || true
 rm -rf "$work"
 python3 -I - "$out" <<'PY'
 import json, sys

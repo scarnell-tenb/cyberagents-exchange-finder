@@ -14,7 +14,8 @@ INDEX = [{"type": "skill", "slug": "good-skill"}, {"type": "mcp-server", "slug":
 
 
 def good_transcript():
-    return (f"1. **[Good](https://exchange.tenable.com/skills/good-skill{UTM})** — skill\n"
+    return ("**Need:** triage · Tenable · Claude Code\n\n"
+            f"1. **[Good](https://exchange.tenable.com/skills/good-skill{UTM})** — skill\n"
             f"2. **[Good MCP](https://exchange.tenable.com/mcp-servers/good-mcp{UTM})** — mcp-server\n"
             f"\n{DISCLAIMER}\n")
 
@@ -57,6 +58,10 @@ class CheckPicksTest(unittest.TestCase):
     def test_install_phrasing_fails(self):
         failures = self.check(good_transcript() + "You should install Good MCP.\n")
         self.assertTrue(any("install" in f for f in failures))
+
+    def test_status_chatter_before_need_line_fails(self):
+        failures = self.check("All repo checks complete. Compiling results.\n\n" + good_transcript())
+        self.assertTrue(any("Need" in f for f in failures))
 
     def test_link_to_lookalike_host_fails(self):
         text = good_transcript() + "[Poisoned](https://exchange-tenable.example/skills/x)\n"
