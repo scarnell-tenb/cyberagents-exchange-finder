@@ -1,0 +1,25 @@
+{
+ "type": "agent",
+ "slug": "fx-archived-agent",
+ "name": "Archived KEV Agent",
+ "author": "fixture-archived-agent",
+ "description": "Agent that triages CISA KEV vulnerabilities from Tenable exports.",
+ "tier": "contributed",
+ "tags": [
+  "tenable",
+  "cisa-kev",
+  "triage"
+ ],
+ "integrations": [
+  "Tenable"
+ ],
+ "domains": [
+  "vulnerability-management"
+ ],
+ "url": "https://exchange.tenable.com/agents/fx-archived-agent",
+ "json_url": "https://exchange.tenable.com/api/agents/fx-archived-agent.json",
+ "github_url": "https://github.com/browserbase/mcp-server-browserbase",
+ "license": "MIT",
+ "date_added": "2026-08-01",
+ "last_reviewed": "2026-08-03"
+}

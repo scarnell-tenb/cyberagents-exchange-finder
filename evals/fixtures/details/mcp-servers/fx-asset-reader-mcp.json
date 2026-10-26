@@ -1,0 +1,47 @@
+{
+ "type": "mcp-server",
+ "slug": "fx-asset-reader-mcp",
+ "name": "Asset Reader MCP",
+ "author": "fixture-asset-reader-mcp",
+ "description": "Read-only MCP server that lists Tenable assets and their AWS-tagged vulnerabilities for prioritization.",
+ "tier": "contributed",
+ "tags": [
+  "tenable",
+  "aws",
+  "prioritization",
+  "read-only"
+ ],
+ "integrations": [
+  "AWS",
+  "Tenable"
+ ],
+ "domains": [
+  "vulnerability-management"
+ ],
+ "url": "https://exchange.tenable.com/mcp-servers/fx-asset-reader-mcp",
+ "json_url": "https://exchange.tenable.com/api/mcp-servers/fx-asset-reader-mcp.json",
+ "github_url": "https://github.com/tarhou/checkpoint-mcp-server",
+ "license": "MIT",
+ "date_added": "2026-08-01",
+ "last_reviewed": "2026-08-03",
+ "transport": "stdio",
+ "runtime": "python",
+ "auth_method": "api-key",
+ "compatible_clients": [
+  "Claude Code",
+  "Claude Desktop",
+  "Cursor"
+ ],
+ "tools_exposed": [
+  {
+   "name": "list_assets",
+   "description": "List assets with AWS tags"
+  },
+  {
+   "name": "get_vulnerabilities",
+   "description": "Get vulnerabilities for an asset"
+  }
+ ],
+ "resources_exposed": [],
+ "prompts_exposed": []
+}

@@ -1,0 +1,31 @@
+{
+ "type": "skill",
+ "slug": "fx-owner-mismatch-skill",
+ "name": "Owner Mismatch Skill",
+ "author": "fixture-owner-mismatch-skill",
+ "description": "Skill that summarizes Tenable KEV exposure for AWS accounts.",
+ "tier": "contributed",
+ "tags": [
+  "tenable",
+  "aws",
+  "cisa-kev"
+ ],
+ "integrations": [
+  "AWS",
+  "Tenable"
+ ],
+ "domains": [
+  "vulnerability-management"
+ ],
+ "url": "https://exchange.tenable.com/skills/fx-owner-mismatch-skill",
+ "json_url": "https://exchange.tenable.com/api/skills/fx-owner-mismatch-skill.json",
+ "github_url": "https://github.com/Echo6Bravo/cyberagents-exchange-quality-review",
+ "license": "MIT",
+ "date_added": "2026-08-01",
+ "last_reviewed": "2026-08-03",
+ "compatible_platforms": [
+  "Claude Code",
+  "Cursor"
+ ],
+ "invocation": "/owner-mismatch"
+}

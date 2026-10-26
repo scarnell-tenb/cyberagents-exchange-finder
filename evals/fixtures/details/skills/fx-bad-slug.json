@@ -1,0 +1,29 @@
+{
+ "type": "skill",
+ "slug": "fx-bad-slug",
+ "name": "Bad Slug Skill",
+ "author": "fixture-bad-slug",
+ "description": "Builds CISA KEV remediation reports from Tenable data.",
+ "tier": "contributed",
+ "tags": [
+  "tenable",
+  "cisa-kev",
+  "reporting"
+ ],
+ "integrations": [
+  "Tenable"
+ ],
+ "domains": [
+  "vulnerability-management"
+ ],
+ "url": "https://exchange.tenable.com/skills/fx-bad-slug",
+ "json_url": "https://exchange.tenable.com/api/skills/fx-bad-slug.json",
+ "github_url": "https://github.com/scarnell-tenb/fixture-nonexistent-repo",
+ "license": "MIT",
+ "date_added": "2026-08-01",
+ "last_reviewed": "2026-08-03",
+ "compatible_platforms": [
+  "Claude Code"
+ ],
+ "invocation": "/bad-slug"
+}

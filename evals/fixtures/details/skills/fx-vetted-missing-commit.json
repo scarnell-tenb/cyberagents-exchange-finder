@@ -1,0 +1,31 @@
+{
+ "type": "skill",
+ "slug": "fx-vetted-missing-commit",
+ "name": "Vetted Missing Commit Skill",
+ "author": "fixture-vetted-missing-commit",
+ "description": "Vetted skill that builds CISA KEV remediation reports from Tenable data.",
+ "tier": "vetted",
+ "tags": [
+  "tenable",
+  "cisa-kev",
+  "reporting"
+ ],
+ "integrations": [
+  "Tenable"
+ ],
+ "domains": [
+  "vulnerability-management"
+ ],
+ "url": "https://exchange.tenable.com/skills/fx-vetted-missing-commit",
+ "json_url": "https://exchange.tenable.com/api/skills/fx-vetted-missing-commit.json",
+ "github_url": "https://github.com/jtbuchanan-tenb/cyberagent-exchange-submission-builder",
+ "license": "MIT",
+ "date_added": "2026-08-01",
+ "last_reviewed": "2026-08-03",
+ "vetted_on": "2026-09-01",
+ "vetted_commit_sha": "0123456789abcdef0123456789abcdef01234567",
+ "compatible_platforms": [
+  "Claude Code"
+ ],
+ "invocation": "/vetted-missing"
+}

@@ -1,0 +1,47 @@
+{
+ "type": "mcp-server",
+ "slug": "fx-remediation-writer-mcp",
+ "name": "Remediation Writer MCP",
+ "author": "fixture-remediation-writer-mcp",
+ "description": "MCP server that lists Tenable assets and AWS-tagged vulnerabilities for prioritization, and opens remediation jobs.",
+ "tier": "contributed",
+ "tags": [
+  "tenable",
+  "aws",
+  "prioritization",
+  "remediation"
+ ],
+ "integrations": [
+  "AWS",
+  "Tenable"
+ ],
+ "domains": [
+  "vulnerability-management"
+ ],
+ "url": "https://exchange.tenable.com/mcp-servers/fx-remediation-writer-mcp",
+ "json_url": "https://exchange.tenable.com/api/mcp-servers/fx-remediation-writer-mcp.json",
+ "github_url": "https://github.com/tarhou/chokepoint-finder",
+ "license": "MIT",
+ "date_added": "2026-08-01",
+ "last_reviewed": "2026-08-03",
+ "transport": "http",
+ "runtime": "node",
+ "auth_method": "token",
+ "compatible_clients": [
+  "Claude Code",
+  "Claude Desktop",
+  "Cursor"
+ ],
+ "tools_exposed": [
+  {
+   "name": "list_assets",
+   "description": "List assets with AWS tags"
+  },
+  {
+   "name": "apply_patch_job",
+   "description": "Create and start a patch job on target assets"
+  }
+ ],
+ "resources_exposed": [],
+ "prompts_exposed": []
+}

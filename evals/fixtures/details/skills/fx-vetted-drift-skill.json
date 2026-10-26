@@ -1,0 +1,31 @@
+{
+ "type": "skill",
+ "slug": "fx-vetted-drift-skill",
+ "name": "Vetted Drift Skill",
+ "author": "fixture-vetted-drift-skill",
+ "description": "Skill that builds CISA KEV remediation reports from Tenable data.",
+ "tier": "vetted",
+ "tags": [
+  "tenable",
+  "cisa-kev",
+  "reporting"
+ ],
+ "integrations": [
+  "Tenable"
+ ],
+ "domains": [
+  "vulnerability-management"
+ ],
+ "url": "https://exchange.tenable.com/skills/fx-vetted-drift-skill",
+ "json_url": "https://exchange.tenable.com/api/skills/fx-vetted-drift-skill.json",
+ "github_url": "https://github.com/jtbuchanan-tenb/cyberagent-exchange-submission-builder",
+ "license": "MIT",
+ "date_added": "2026-08-01",
+ "last_reviewed": "2026-08-03",
+ "vetted_on": "2026-09-01",
+ "vetted_commit_sha": "461556717cc6c61ec87061dd178e35c437fa9152",
+ "compatible_platforms": [
+  "Claude Code"
+ ],
+ "invocation": "/vetted-drift"
+}
