@@ -11,7 +11,7 @@ prompt="$(printf '%s\n' "$block" | sed -n 's/^prompt: //p')"
 prompt="${prompt//\{FIXTURES\}/$fixtures}"
 data="$(printf '%s\n' "$block" | sed -n 's/^data: //p')"
 tools="$(printf '%s\n' "$block" | sed -n 's/^tools: //p')"
-[ -n "$tools" ] || tools='Bash(curl:*) Read WebFetch Skill'
+[ -n "$tools" ] || tools='Bash(curl:*) Bash(jq:*) Read WebFetch Skill'
 read -r -a tool_args <<< "$tools"
 
 out="$repo/evals/runs/$id${mode:+-baseline}"

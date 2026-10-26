@@ -26,7 +26,8 @@ This skill is the whole workflow for the request. Start at Step 1 straight away;
    - Card links are built from the mapped type and the validated slug, `https://exchange.tenable.com/<type-dir>/<slug>`, never copied from its `url` field. If `url` differs from that, say so in the card, naming only the domain in backticks without `https://` (e.g. "`url` field points to `exchange-tenable.example`"), so it can't render as a clickable link.
    - Single-quote every URL you pass to `curl`.
    - A value that fails its pattern goes into no command or link. Show "repo status unknown" (or drop the pick, for a bad `json_url`).
-5. **Private by design.** Only fetch the static URLs below. Never put the user's words, stack or environment into any URL or request.
+5. **Answer shape is fixed.** Say nothing to the user while you work. Your reply's first characters are `**Need:**`, with no "all checks done" or "here's what I found" before it. **Best matches** shows at most **3** cards unless the user asked for more.
+6. **Private by design.** Only fetch the static URLs below. Never put the user's words, stack or environment into any URL or request.
 
 ## Steps
 
@@ -35,9 +36,10 @@ This skill is the whole workflow for the request. Start at Step 1 straight away;
 **2. Get the index.**
 - *Local mode:* if the user gives a path to a `listings.json`, Read it, and read detail records from the folder they name. Skip GitHub checks unless they say the network is available. Label the answer "From your local copy of the index".
 - *Otherwise,* if you have a shell:
-  - Run exactly `curl -sS -f 'https://exchange.tenable.com/api/listings.json'` as its own command: no pipes, redirects, shell variables or chained commands, so it needs only one permission.
-  - Parse the JSON it prints (if your tool saved long output to a file, read that file).
-  - Fetch the index **once**.
+  - The index is a single ~80 KB line, which file readers truncate. Fetch it **once**, as one listing per line, with exactly this command:
+    `curl -sS -f 'https://exchange.tenable.com/api/listings.json' | jq -c '.[] | [.type,.slug,.tier,.name,.integrations,.domains,.tags,.description,.json_url]'`
+  - If `jq` isn't available, use the web-fetch fallback below. Don't redirect output to files or try other workarounds.
+  - If your tool saved the output to a file, read that file. Each line is one listing.
 - *Without a shell,* use your web-fetch tool and ask it to return the JSON **verbatim, every row**. Summarizing fetchers drop rows, so Step 4 confirms every pick.
 - If the fetch fails or the domain is blocked, say: "I couldn't reach the CyberAgents Exchange (https://exchange.tenable.com/api/listings.json). Allow that domain, or give me a local copy of the file." Then stop.
 - If the index has more than ~300 rows, filter by `type` before reading it all.
