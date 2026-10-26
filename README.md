@@ -23,7 +23,7 @@ The skill:
 
 - Claude Code (see Install).
 - Network access to `exchange.tenable.com` and `api.github.com`, **or** a local copy of the Exchange index (see "Locked-down networks").
-- A shell with `curl`, `jq` and `grep` is recommended. They come with macOS 15+ and most Linux systems, so there's nothing to install. Claude Code asks once for permission to run each. Without them, the skill falls back to your tool's web fetch, which is slower.
+- A shell with `curl` and `jq` is recommended. Both come with macOS 15+ and most Linux systems, so there's nothing to install. Claude Code asks once for permission to run each. Without them, the skill falls back to your tool's web fetch, which is slower.
 
 ## Install
 

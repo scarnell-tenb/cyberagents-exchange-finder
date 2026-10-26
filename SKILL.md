@@ -58,9 +58,10 @@ Keep only what you'll show: up to 3 strong (5 if the user asked for more) and up
 
 Re-check the ranking now that you have these fields (Access rules, platform fit).
 
-**5. Repo checks in one command** (skip in local mode unless the network is available). Put every shown pick's repo URL, plus the compare URL for each vetted pick with a valid SHA, into a single call. Keep only the fields you need:
-`curl -sS -w '\n=== %{url_effective} %{http_code}\n' '<url 1>' '<url 2>' … | grep -E '^===|"(full_name|archived|pushed_at|language|ahead_by)"'`
-Each response's fields appear just before its own `===` status line.
+**5. Repo checks in one command** (skip in local mode unless the network is available). Put every shown pick's repo URL, plus the compare URL for each vetted pick with a valid SHA, into a single call, written on one line exactly like this (no `-w`, no line breaks):
+`curl -sS '<url 1>' '<url 2>' … | jq -c '[.full_name,.archived,.pushed_at,.language,.ahead_by,.status,.message,.url]'`
+- You get one row per URL, in the same order.
+- Error responses carry `.status` (e.g. `"404"`) and `.message`. "Not Found" is a 404; "API rate limit exceeded" is a 403.
 - **Repo:** `'https://api.github.com/repos/<owner>/<repo>'`.
   - 200 → read `archived`, the owner from `full_name` (flag if it differs from `author`, case-insensitive), `pushed_at` (flag if more than 12 months ago) and, for agents and MCP servers only, `language` (flag `no code detected in repo` if it's null). Skills are often markdown-only, so never apply that flag to them.
   - 404 → `repo not found`.
