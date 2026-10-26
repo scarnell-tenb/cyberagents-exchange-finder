@@ -53,5 +53,7 @@ Should fire: 5/5. Should not fire: 5/5.
 6. **Subfolder repo URLs** (2 of 123 live listings) were rejected and the cards lost their links. The pattern is fixed.
 7. **Raw slugs:** a dropped listing's raw slug was quoted in the answer. Dropped listings are now described, not quoted.
 
-## Not yet verified
-Gemini CLI is installed but awaiting sign-in. Claude Desktop/Cowork (ZIP upload), Cursor and Codex install paths are confirmed from official docs and source, but not run. The listing declares Claude Code only until they are.
+## Platforms
+- **Tested: Claude Code only.** It's the only platform declared in the listing and documented in the README.
+- **Gemini CLI:** blocked. Google no longer supports personal Google sign-in for Gemini CLI ("client is no longer supported for Gemini Code Assist for individuals"). Could be tested later with an API key or Vertex.
+- **Claude Desktop/Cowork, Cursor, Codex:** install paths confirmed from official docs and source, but not run. Left out of v0.1.0.

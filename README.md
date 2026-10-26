@@ -21,7 +21,7 @@ The skill:
 
 ## Prerequisites
 
-- An AI assistant that can load `SKILL.md` skills (see Install).
+- Claude Code (see Install).
 - Network access to `exchange.tenable.com` and `api.github.com`, **or** a local copy of the Exchange index (see "Locked-down networks").
 - A shell with `curl` is recommended. Without one, the skill falls back to your tool's web fetch.
 
@@ -37,31 +37,9 @@ git clone https://github.com/scarnell-tenb/cyberagents-exchange-finder ~/.claude
 
 Restart Claude Code. Invoke it with `/cyberagents-exchange-finder`, or just ask "what's on the Exchange for …".
 
-### Claude Desktop and Claude Cowork
+### Other AI tools
 
-Requires code execution to be enabled (on Team/Enterprise plans, an admin must also enable Skills).
-
-1. Download this repo (**Code → Download ZIP**) and unzip it.
-2. Rename the unzipped folder to `cyberagents-exchange-finder`. The folder name must match the skill name.
-3. Zip that folder again.
-4. In Claude, open **Customize → Skills → + → Create skill → Upload a skill**, and upload the ZIP.
-5. If your code-execution network settings restrict domains, allow `exchange.tenable.com` and `api.github.com`.
-
-### Codex, Cursor and Gemini CLI
-
-All three load skills from the shared user folder `~/.agents/skills/`:
-
-```bash
-git clone https://github.com/scarnell-tenb/cyberagents-exchange-finder ~/.agents/skills/cyberagents-exchange-finder
-```
-
-- **Codex:** also reads `~/.codex/skills/`. Codex's default sandbox may block network access; allow it for the session so the skill can fetch the index.
-- **Cursor:** also reads `~/.cursor/skills/`. Invoke it by typing `/` in Agent chat and picking the skill, or just ask.
-- **Gemini CLI:** also reads `~/.gemini/skills/`. Or install with `gemini skills install https://github.com/scarnell-tenb/cyberagents-exchange-finder.git`. Gemini asks for your consent the first time the skill activates.
-
-### Other agents
-
-Any agent that can read a `SKILL.md` and fetch URLs can use it: point it at `SKILL.md` (this repo's `AGENTS.md` does that). That includes GroxBot, though GroxBot isn't yet in the Exchange's platform list.
+Version 0.1.0 is tested on Claude Code only. `SKILL.md` follows the open Agent Skills format with plain instructions and no Claude-specific tools, so other assistants that load Agent Skills and can fetch URLs may work. They haven't been tested yet, and the Exchange listing declares Claude Code only. If you try it elsewhere, please open an issue with what happened.
 
 ## How to use
 
