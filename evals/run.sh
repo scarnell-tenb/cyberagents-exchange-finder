@@ -20,7 +20,7 @@ rm -rf "$out"; mkdir -p "$out"
 work="$(mktemp -d "${TMPDIR:-/tmp}/finder-eval-$id.XXXXXX")"
 if [ "$mode" != "--baseline" ]; then
   mkdir -p "$work/.claude/skills/cyberagents-exchange-finder"
-  cp -R "$repo/SKILL.md" "$repo/references" "$work/.claude/skills/cyberagents-exchange-finder/"
+  cp "$repo/SKILL.md" "$work/.claude/skills/cyberagents-exchange-finder/"
 fi
 
 (cd "$work" && claude -p "$prompt" --output-format stream-json --verbose \

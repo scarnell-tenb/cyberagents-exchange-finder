@@ -26,6 +26,6 @@ A finder for the CyberAgents Exchange itself. Describe the security job you're d
 
 ## How it works
 
-It's a single `SKILL.md` plus one reference file, with no runtime code. It fetches only the Exchange's public JSON endpoints and GitHub's public repo-metadata API, as plain GETs. Nothing you type is sent to the Exchange or GitHub. Listing data is treated as untrusted: values are pattern-checked before they go into any command, and instructions embedded in listings are ignored. A local copy of the index can be used on locked-down networks.
+It's a single `SKILL.md` with no runtime code. It fetches only the Exchange's public JSON endpoints and GitHub's public repo-metadata API, as plain GETs. Nothing you type is sent to the Exchange or GitHub. Listing data is treated as untrusted: values are pattern-checked before they go into any command, and instructions embedded in listings are ignored. A local copy of the index can be used on locked-down networks.
 
 It's listed under Platform Operations because its job is helping people find and evaluate Exchange tooling (an onboarding helper), not performing a security function itself.

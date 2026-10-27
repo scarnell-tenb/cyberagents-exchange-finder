@@ -7,7 +7,7 @@ grep -E '^- [TN][0-9]+: ' "$repo/evals/triggers.md" | while IFS= read -r line; d
   id="${line#- }"; id="${id%%:*}"; prompt="${line#*: }"
   work="$(mktemp -d "${TMPDIR:-/tmp}/finder-trig-$id.XXXXXX")"
   mkdir -p "$work/.claude/skills/cyberagents-exchange-finder"
-  cp -R "$repo/SKILL.md" "$repo/references" "$work/.claude/skills/cyberagents-exchange-finder/"
+  cp "$repo/SKILL.md" "$work/.claude/skills/cyberagents-exchange-finder/"
   (cd "$work" && claude -p "$prompt" --output-format stream-json --verbose \
      --allowedTools "Bash(curl:*)" "Bash(jq:*)" "Bash(grep:*)" "Read" "WebFetch" "Skill" < /dev/null > "$out/$id.jsonl" 2>/dev/null) || true
   rm -rf "$work"

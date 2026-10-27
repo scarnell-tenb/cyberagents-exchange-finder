@@ -75,3 +75,17 @@ Prompts: P1 SOC triage (CrowdStrike + Splunk) · P2 Azure/GCP misconfigurations 
 Found along the way: `listings.json` is a single 78,863-character line, and file readers truncate it at 2,000 characters. The skill now projects it to one listing per line with `jq`. An Exchange-side pretty-printed or JSONL endpoint would remove the need for this.
 
 S21 (no shell allowed): it works through web fetch alone, with all cards accurate, but takes about 20 calls.
+
+## Speed: Haiku + pre-approved fetches (no Python, nothing to install)
+
+Frontmatter sets `model: haiku` and pre-approves only `curl` to `exchange.tenable.com` / `api.github.com/repos/` and the skill's three exact `jq` filters. Tests ran with **no** outside pre-approvals except loading the skill.
+
+| Invocation | Model | Time | Cost | Permission prompts | Cards wrong |
+|---|---|---|---|---|---|
+| `/cyberagents-exchange-finder` (P1, P3, P5) | Haiku | 28–55s | ~$0.01 | 0 | 0/11 |
+| Plain language, auto-triggered (P1) | session model (Sonnet) | ~80s | ~$0.37 | 0 | 0/3 |
+
+- In Claude Code 2.1.308, `model:` (and `context: fork`) only takes effect when the skill is started with its slash command. An auto-triggered skill stays on the session model. The README tells users to use the slash command for speed.
+- The reference file was merged into SKILL.md. Reading a separate file from a user-level skill folder needed a permission, and when it was denied Haiku gave up.
+- Regression after these changes: S4, S5, S6, S9, S10, S13, S19 and S20 all pass (S20 3/3 after fixes). Poisoned values never reached a command. A new `**Checks:**` line holds notes such as rate limits and dropped listings, which used to leak in front of the Need line. One of 7 normal-model runs still opened with a status sentence (cosmetic).
+- Local mode now reads files with the file tool and never silently switches to the live index.

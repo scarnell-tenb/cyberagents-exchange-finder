@@ -27,7 +27,7 @@ The skill:
 
 ## Install
 
-The skill is the folder holding `SKILL.md` and `references/`.
+The skill is a single file, `SKILL.md`.
 
 ### Claude Code
 
@@ -45,6 +45,8 @@ Version 0.1.0 is tested on Claude Code only. `SKILL.md` follows the open Agent S
 
 - `/cyberagents-exchange-finder`, or plain language: "find me an MCP server for SentinelOne", "is there anything on the Exchange for KEV prioritization in Tenable?"
 - Mention your tools and your AI tool for better results. If your request is too vague, it asks one question.
+- **Fastest:** start with `/cyberagents-exchange-finder …`. In Claude Code that runs the skill on Claude Haiku: typically 30–55 seconds and about a cent per search. When the skill triggers from plain language, it runs on your session's model instead, which is slower (about 80 seconds) but equally accurate.
+- **No permission prompts:** the skill pre-approves only its own fetches to `exchange.tenable.com` and `api.github.com`, plus the three exact `jq` filters it uses. Nothing else is approved.
 - Follow-ups such as "compare 1 and 3" or "anything vetted?" reuse what it already fetched.
 
 ## What it outputs
