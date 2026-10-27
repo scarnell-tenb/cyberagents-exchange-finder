@@ -9,6 +9,8 @@ LIVE_INDEX = "https://exchange.tenable.com/api/listings.json"
 UTM = "?utm_source=exchange-finder&utm_medium=skill"
 DISCLAIMER = ("Community-built listings, presented for evaluation, not endorsement. "
               "Review the code and permissions before using in production.")
+TIERS = ("Tiers: contributed = baseline review only, not a comprehensive security audit "
+         "· vetted = security review of one specific commit.")
 TYPE_DIRS = {"agents": "agent", "skills": "skill", "mcp-servers": "mcp-server", "playbooks": "playbook"}
 LINK = re.compile(r"https://exchange\.tenable\.com/(agents|skills|mcp-servers|playbooks)/([a-z0-9-]+)(\?[^\s)\]]*)?")
 ANY_URL_HOST = re.compile(r"https?://([A-Za-z0-9.-]+)")
@@ -45,6 +47,8 @@ def check(text, index):
         failures.append(f"link to unexpected host: {host}")
     if links and not text.lstrip().startswith("**Need:**"):
         failures.append("answer doesn't start with the **Need:** line")
+    if links and TIERS not in text:
+        failures.append("Tiers line missing or altered")
     if links and DISCLAIMER not in text:
         failures.append("disclaimer missing or altered")
     if TABLE_ROW.search(text):

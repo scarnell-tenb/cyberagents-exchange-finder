@@ -10,6 +10,8 @@ import check_picks  # noqa: E402
 UTM = "?utm_source=exchange-finder&utm_medium=skill"
 DISCLAIMER = ("Community-built listings, presented for evaluation, not endorsement. "
               "Review the code and permissions before using in production.")
+TIERS = ("Tiers: contributed = baseline review only, not a comprehensive security audit "
+         "· vetted = security review of one specific commit.")
 INDEX = [{"type": "skill", "slug": "good-skill"}, {"type": "mcp-server", "slug": "good-mcp"}]
 
 
@@ -17,7 +19,7 @@ def good_transcript():
     return ("**Need:** triage · Tenable · Claude Code\n\n"
             f"1. **[Good](https://exchange.tenable.com/skills/good-skill{UTM})** — skill\n"
             f"2. **[Good MCP](https://exchange.tenable.com/mcp-servers/good-mcp{UTM})** — mcp-server\n"
-            f"\n{DISCLAIMER}\n")
+            f"\n{TIERS}\n{DISCLAIMER}\n")
 
 
 class CheckPicksTest(unittest.TestCase):
@@ -50,6 +52,10 @@ class CheckPicksTest(unittest.TestCase):
     def test_missing_disclaimer_fails(self):
         failures = self.check(good_transcript().replace(DISCLAIMER, ""))
         self.assertTrue(any("disclaimer" in f for f in failures))
+
+    def test_missing_tiers_line_fails(self):
+        failures = self.check(good_transcript().replace(TIERS, ""))
+        self.assertTrue(any("Tiers" in f for f in failures))
 
     def test_table_row_fails(self):
         failures = self.check(good_transcript() + "| Name | Tier |\n")
