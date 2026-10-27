@@ -62,9 +62,9 @@ Example card:
 1. **Tenable SC Reporting Assistant** — skill · [listing](https://exchange.tenable.com/skills/tenable-sc-reporting-assistant?utm_source=exchange-finder&utm_medium=skill) · [repo](https://github.com/hamzhk15/tenable-sc-reporting-assistant)
    - Does: Generates and uploads Tenable SC dashboards, PDF reports, and CSV exports via tested XML builders
    - Fits you: builds the Tenable.sc compliance dashboards you asked for
-   - Risk: changes systems: uploads dashboards to Tenable SC · talks to Tenable
-   - Trust: contributed — baseline review only, not a comprehensive security audit · last reviewed 3 months ago
-   - Project: personal account · 3 stars · 1 fork · 0 open issues · pushed 3 months ago
+   - Risk: may change systems (inferred): description says "uploads"; confirm in the repo · talks to Tenable
+   - Trust: contributed · last reviewed 3 months ago
+   - Project: personal account · 6 stars · 0 forks · 0 open issues · pushed 3 months ago
    - You'll need: Tenable
    - Setup: effort low · runs on your tool ✓ · runs as instructions only · invoke `/tenable-sc-reporting-assistant`
 ```
