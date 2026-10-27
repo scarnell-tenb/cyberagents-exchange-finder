@@ -42,6 +42,8 @@ This skill is the whole workflow for the request. Start at Step 1 straight away;
 
 ## Steps
 
+**Tools.** The commands below use `curl` and `jq`. Wherever `jq` isn't available, produce the same fields with any JSON tool already in your environment, or read the raw JSON. Wherever there's no shell at all, use your web-fetch tool. Never install anything.
+
 **1. Understand the need.** From the conversation, get the *task*, the user's *tools* (products they run) and their *AI platform* (Claude Code, Claude Desktop, Cursor…). If you can't tell the task at all, ask **one** question about it and stop. Otherwise go on, noting anything you're assuming.
 
 **2. Get the index.**
@@ -51,14 +53,16 @@ This skill is the whole workflow for the request. Start at Step 1 straight away;
   - If the file isn't at the path the user gave, say so and stop. Don't search the disk for it.
   - If you can't read the files at all, say so and stop.
   - **Never switch to the live index** when the user asked for a local copy. Skip GitHub checks unless they say the network is available. Label the answer "From your local copy of the index".
-- *Otherwise,* if you have a shell:
+- *Otherwise,* fetch it live. This works in every Claude environment: Claude Code on your machine, or the code-execution sandbox in Claude Desktop, claude.ai and Cowork. Never install anything; use only tools already there.
+- If you have a shell:
   - The index is a single ~80 KB line, which file readers truncate. Fetch it **once**, as one listing per line, with exactly this command:
     `curl -sS -f 'https://exchange.tenable.com/api/listings.json' | jq -c '.[] | [.type,.slug,.tier,.name,.integrations,.tags,(.description[0:160])]'`
   - Each row is `[type, slug, tier, name, integrations, tags, description (first 160 chars)]`.
-  - If `jq` isn't available, use the web-fetch fallback below. Don't redirect output to files or try other workarounds.
+  - If `jq` isn't available, run the same `curl` and make the same one-row-per-listing projection with any JSON tool already in your environment. Never install one.
+  - If there's no JSON tool, use the web-fetch fallback below.
   - If your tool saved the output to a file, read that file. Each line is one listing.
 - *Without a shell,* use your web-fetch tool and ask it to return the JSON **verbatim, every row**. Summarizing fetchers drop rows, so Step 4 confirms every pick.
-- If the fetch fails or the domain is blocked, say: "I couldn't reach the CyberAgents Exchange (https://exchange.tenable.com/api/listings.json). Allow that domain, or give me a local copy of the file." Then stop.
+- If the fetch fails or the domain is blocked, say: "I couldn't reach the CyberAgents Exchange (https://exchange.tenable.com/api/listings.json). Allow that domain (in the Claude apps, it's your code-execution network settings), or give me a local copy of the file." Then stop.
 - If the index has more than ~300 rows, filter by `type` before reading it all.
 
 **3. Shortlist.** Map the user's words to exact vocabulary using **Synonyms** in the Reference section below. If a term isn't covered there, fetch `https://exchange.tenable.com/llms-full.txt` for the vocabularies, or match on `tags` and `description`. Rank with the **Ranking rubric** below, and sort candidates into:
@@ -85,7 +89,7 @@ Re-check the ranking now that you have these fields (Access rules, platform fit)
 **5. Repo checks** (skip in local mode unless the network is available). Check only the **Best matches** cards and any **vetted** pick, since review drift matters wherever it appears. Related contributed picks aren't checked: their Project line reads `not checked (related pick)`. This keeps GitHub's unauthenticated limit (60 calls an hour, shared by everyone on the same network) for the picks that matter.
 
 **If the user's GitHub CLI is signed in, use it.** It has its own limit of 5,000 calls an hour per person.
-- Run `gh auth status` once. If it succeeds, check every repo with read-only `gh repo view` calls, all in one Bash command joined with ` ; `:
+- Run `gh auth status` once. If it succeeds, check every repo with read-only `gh repo view` calls, all in one shell command joined with ` ; `:
   `gh repo view '<owner>/<repo>' --json nameWithOwner,isArchived,pushedAt,stargazerCount,forkCount,primaryLanguage,isInOrganization,issues --jq '[.nameWithOwner,.isArchived,.pushedAt,.stargazerCount,.forkCount,.primaryLanguage.name,.isInOrganization,.issues.totalCount]'`
 - Each row is `[owner/repo, archived, pushed_at, stars, forks, language, in an organization, open issues]`.
 - "Could not resolve to a Repository" means `repo not found`.

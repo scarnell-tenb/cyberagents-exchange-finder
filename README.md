@@ -37,9 +37,21 @@ git clone https://github.com/scarnell-tenb/cyberagents-exchange-finder ~/.claude
 
 Restart Claude Code. Invoke it with `/cyberagents-exchange-finder`, or just ask "what's on the Exchange for …".
 
+### Claude Desktop, claude.ai and Cowork (preview: being verified)
+
+These run skills in Anthropic's code-execution sandbox, so the skill fetches the Exchange from there, not from your machine.
+
+1. Make sure code execution is enabled. On Team and Enterprise plans, an admin must also enable Skills.
+2. Download `cyberagents-exchange-finder.zip` from this repo's Releases page, or zip a folder named exactly `cyberagents-exchange-finder` that contains `SKILL.md`.
+3. In Claude, open **Customize → Skills → + → Create skill → Upload a skill**, and upload the ZIP.
+4. If your organization restricts code-execution network access, allow `exchange.tenable.com` and `api.github.com`.
+5. Ask "what's on the CyberAgents Exchange for …".
+
+Without `jq` or a shell, the skill uses whatever JSON tools are already in the sandbox, or web fetch, and its **Checks:** line says when a fallback might have missed a listing.
+
 ### Other AI tools
 
-Version 0.1.0 is tested on Claude Code only. `SKILL.md` follows the open Agent Skills format with plain instructions and no Claude-specific tools, so other assistants that load Agent Skills and can fetch URLs may work. They haven't been tested yet, and the Exchange listing declares Claude Code only. If you try it elsewhere, please open an issue with what happened.
+Version 0.1.0 is fully tested on Claude Code. The Claude apps above are in preview. `SKILL.md` follows the open Agent Skills format with plain instructions and no Claude-specific tools, so other assistants that load Agent Skills and can fetch URLs may work. They haven't been tested yet, and the Exchange listing declares Claude Code only. If you try it elsewhere, please open an issue with what happened.
 
 ## How to use
 
