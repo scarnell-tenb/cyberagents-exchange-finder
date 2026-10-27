@@ -8,6 +8,8 @@ allowed-tools:
   - Bash(jq -c '.[] | [.type,.slug,.tier,.name,.integrations,.tags,(.description[0:160])]')
   - Bash(jq -c '[.type,.slug,.tier,.author,.github_url,.vetted_commit_sha,.vetted_on,.last_reviewed,.date_added,.compatible_platforms,.compatible_clients,.transport,.runtime,.auth_method,.invocation,.url,[.tools_exposed[]? | [.name,.description]],[.agents_used[]? | [.name,.type,.ref]]]')
   - Bash(jq -c '[.full_name,.archived,.pushed_at,.language,.stargazers_count,.forks_count,.open_issues_count,.owner.type,.ahead_by,.status,.message,.url]')
+  - Bash(gh auth status)
+  - Bash(gh repo view *)
   - WebFetch(domain:exchange.tenable.com)
   - WebFetch(domain:api.github.com)
 metadata:
@@ -75,12 +77,22 @@ From each record, read:
 
 Re-check the ranking now that you have these fields (Access rules, platform fit).
 
-**5. Repo checks in one command** (skip in local mode unless the network is available). Put every shown pick's repo URL, plus the compare URL for each vetted pick with a valid SHA, into a single call, written on one line exactly like this (no `-w`, no line breaks):
+**5. Repo checks** (skip in local mode unless the network is available). Check only the **Best matches** cards and any **vetted** pick, since review drift matters wherever it appears. Related contributed picks aren't checked: their Project line reads `not checked (related pick)`. This keeps GitHub's unauthenticated limit (60 calls an hour, shared by everyone on the same network) for the picks that matter.
+
+**If the user's GitHub CLI is signed in, use it.** It has its own limit of 5,000 calls an hour per person.
+- Run `gh auth status` once. If it succeeds, check every repo with read-only `gh repo view` calls, all in one Bash command joined with ` ; `:
+  `gh repo view '<owner>/<repo>' --json nameWithOwner,isArchived,pushedAt,stargazerCount,forkCount,primaryLanguage,isInOrganization,issues --jq '[.nameWithOwner,.isArchived,.pushedAt,.stargazerCount,.forkCount,.primaryLanguage.name,.isInOrganization,.issues.totalCount]'`
+- Each row is `[owner/repo, archived, pushed_at, stars, forks, language, in an organization, open issues]`.
+- "Could not resolve to a Repository" means `repo not found`.
+- Never use other `gh` commands, and never `gh api`.
+- If `gh` is missing or not signed in, use curl for the repo URLs (below). Either way, vetted compare URLs always use curl.
+
+**Otherwise, use curl.** Put the repo URLs, plus the compare URL for each vetted pick with a valid SHA, into a single call, written on one line exactly like this (no `-w`, no line breaks):
 `curl -sS '<url 1>' '<url 2>' … | jq -c '[.full_name,.archived,.pushed_at,.language,.stargazers_count,.forks_count,.open_issues_count,.owner.type,.ahead_by,.status,.message,.url]'`
 - You get one row per URL, in the same order.
 - Error responses carry `.status` (e.g. `"404"`) and `.message`. "Not Found" is a 404; "API rate limit exceeded" is a 403.
 - **Repo:** `'https://api.github.com/repos/<owner>/<repo>'`.
-  - 200 → note stars, forks, open issues and `owner.type` (`Organization` or `User`) for the card's Project line. Read `archived`, the owner from `full_name` (flag if it differs from `author`, case-insensitive), `pushed_at` (flag if more than 12 months ago) and, for agents and MCP servers only, `language` (flag `no code detected in repo` if it's null). Skills are often markdown-only, so never apply that flag to them.
+  - 200 → note stars, forks, open issues and `owner.type` (`Organization` or `User`; with `gh`, `isInOrganization` true or false) for the card's Project line. Read `archived`, the owner from `full_name` (flag if it differs from `author`, case-insensitive), `pushed_at` (flag if more than 12 months ago) and, for agents and MCP servers only, `language` (flag `no code detected in repo` if it's null). Skills are often markdown-only, so never apply that flag to them.
   - 404 → `repo not found`.
 - **Vetted only, with a valid SHA:** `'https://api.github.com/repos/<owner>/<repo>/compare/<vetted_commit_sha>...HEAD'`.
   - 200 with `ahead_by` > 0 → flag `code has changed since review (<ahead_by> commits ahead)`.
@@ -113,7 +125,7 @@ Re-check the ranking now that you have these fields (Access rules, platform fit)
       - Risk: <access line from Access rules> · <runs locally (stdio) | connects over the network (http) | local or network (both)> · talks to <integrations except Anthropic, or "your AI assistant only">
       - Trust: <contributed | vetted — security review of commit <sha7> (<vetted_on>), that commit only, [reviewed code](https://github.com/<owner>/<repo>/tree/<full vetted_commit_sha>) | vetted — reviewed commit not verifiable> · last reviewed <N> months ago<; added <N> days ago, if under 30>
       - ⚠ Watch: <flags, separated by "; ">
-      - Project: <organization | personal account> · <N> stars · <N> forks · <N> open issues · pushed <N> months ago<; or "repo status unknown" when repo checks didn't run>
+      - Project: <organization | personal account> · <N> stars · <N> forks · <N> open issues · pushed <N> months ago<; or "not checked (related pick)", or "repo status unknown" when checks failed>
       - You'll need: <products from integrations, except Anthropic, or "nothing beyond your AI assistant">
       - Setup: effort <low|medium|high> · <runs on your tool ✓ | doesn't run on <platform> — supports <list> | may not run on <platform> — not stated by listing, check the repo> · runs as <runtime, auth_method, or "instructions only" for skills> · invoke <invocation, skills only><; for an MCP server with write tools and api-key/token auth: "give the key read-only scope unless you need <write tool names>">
    ```
