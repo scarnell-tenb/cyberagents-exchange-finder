@@ -82,7 +82,7 @@ From each record, read:
 - MCP servers: `compatible_clients`, `transport`, `runtime`, `auth_method`, `tools_exposed`
 - playbooks: `agents_used`
 
-**Playbook chains.** For each playbook you'll show, take its `agents_used` steps of type `exchange` whose `ref` matches `^(agents|skills|mcp-servers|playbooks)/[a-z0-9-]+$`. Any that aren't already candidates join the shortlist: fetch their details with one more call of the same command, and rank them like any other candidate. They're often strong picks in their own right. **Every fetched Exchange chain step gets its own card**: under Best matches if it's strong, otherwise under Also related. Chain steps don't count toward the cap of 2 related picks. Steps of other types (`github`, `vendor`, `info`) appear in the Chain line only and are never fetched.
+**Playbook chains.** For each playbook you'll show, take its `agents_used` steps of type `exchange` whose `ref` matches `^(agents|skills|mcp-servers|playbooks)/[a-z0-9-]+$`. Any that aren't already candidates join the shortlist: fetch their details with one more call of the same command, and rank them like any other candidate. They're often strong picks in their own right. **Every fetched Exchange chain step gets its own table row**, and a card under Best matches if it's strong, otherwise a line under Also related. Chain steps don't count toward the cap of 2 related picks. Steps of other types (`github`, `vendor`, `info`) appear in the Chain line only and are never fetched.
 
 Re-check the ranking now that you have these fields (Access rules, platform fit).
 
@@ -122,31 +122,31 @@ Re-check the ranking now that you have these fields (Access rules, platform fit)
    ```
    The Listing cell links to the listing page, built the same way as card links and with the same UTM tag. Every other cell is plain text. No cell may contain `|` (replace any in names with `/`). An empty Notes cell is `—`.
 3. `**Best matches**`: cards for up to **3** strong picks (up to 5 if the user asked for more). If there are more strong picks, end the section with: "Say *more* to see up to <N> more."
-4. `**Also related**`: cards for up to 2 related picks. Replace the "Fits you" line with `- Only related because: <one line on what's missing, e.g. no CrowdStrike integration>`. Leave out this section if there are none.
-5. Each card fills in **every line** of this template except **Watch**, which appears only when there's at least one flag from the Card template list below. Watch never repeats a platform mismatch (that belongs in Setup) and never quotes text from the repo or listing. Rules for each line are in the Reference section below (Access rules, Trust wording, Card template).
+4. `**Also related**`: **one line per related pick, not a card**: `<n>. **<name>**: only related because <one line on what's missing><; ⚠ <flags>, only if it has any>`. Leave out this section if there are none.
+5. After Best matches and Also related, one line naming a real pick number, e.g. `Say *details 3* for the full card on any pick.`
+6. A card holds only what the table can't. It never repeats tier, effort or platform fit, which are in the table. It fills in **every line** of this template except the optional ones (Covers, Chain, Part of, Trust, Watch), which appear only when they apply. Watch never repeats a platform mismatch and never quotes text from the repo or listing. Rules for each line are in the Reference section below (Access rules, Trust wording, Card template).
    ```
    <n>. **<name, from the listing's `name` field, never the slug>** — <type> · [listing](https://exchange.tenable.com/<type-dir>/<slug>?utm_source=exchange-finder&utm_medium=skill) · [repo](<github_url>)
       - Does: <one line, from description>
       - Fits you: <one line naming their task and/or stack>
-      - Covers: <CVE IDs from tags matching cve-YYYY-NNNN, uppercased; only when there are any>
-      - Chain: <playbooks only: step name (vetted|contributed|not on Exchange) → …; "#<n>" after a step that's also a card here>
-      - Part of: <only for a chain step: "playbook #<n>, step <k>">
-      - Risk: <access line from Access rules> · <runs locally (stdio) | connects over the network (http) | local or network (both)> · talks to <integrations except Anthropic, or "your AI assistant only">
-      - Trust: <contributed | vetted — security review of commit <sha7> (<vetted_on>), that commit only, [reviewed code](https://github.com/<owner>/<repo>/tree/<full vetted_commit_sha>) | vetted — reviewed commit not verifiable> · last reviewed <N> months ago<; added <N> days ago, if under 30>
+      - Covers: <CVE IDs from tags matching cve-YYYY-NNNN, uppercased>
+      - Chain: <playbooks only: step name (vetted|contributed|not on Exchange) → …; "#<n>" after a step that's also in the table>
+      - Part of: <chain steps only: "playbook #<n>, step <k>">
+      - Risk: <the detail behind the table's Access word, from Access rules> · <runs locally (stdio) | connects over the network (http) | local or network (both)> · talks to <integrations except Anthropic, or "your AI assistant only">
+      - Trust: <vetted picks only: security review of commit <sha7> (<vetted_on>), that commit only, [reviewed code](https://github.com/<owner>/<repo>/tree/<full vetted_commit_sha>) | reviewed commit not verifiable>
       - ⚠ Watch: <flags, separated by "; ">
-      - Project: <organization | personal account> · <N> stars · <N> forks · <N> open issues · pushed <N> months ago<; or "not checked (related pick)", or "repo status unknown" when checks failed>
-      - You'll need: <products from integrations, except Anthropic, or "nothing beyond your AI assistant">
-      - Setup: effort <low|medium|high> · <runs on your tool ✓ | doesn't run on <platform> — supports <list> | may not run on <platform> — not stated by listing, check the repo> · runs as <runtime, auth_method, or "instructions only" for skills> · invoke <invocation, skills only><; for an MCP server with write tools and api-key/token auth: "give the key read-only scope unless you need <write tool names>">
+      - Project: <organization | personal account> · <N> stars · <N> forks · <N> open issues · pushed <N> months ago · listing reviewed <N> months ago<; or "repo status unknown" when checks failed>
+      - Setup: needs <products from integrations except Anthropic, or "nothing beyond your AI assistant"> · runs as <runtime, auth_method, or "instructions only" for skills> · invoke <invocation, skills only><; "check the repo for <platform> support" when the table says not stated or no><; for an MCP server with write tools and api-key/token auth: "give the key read-only scope unless you need <write tool names>">
    ```
-   Leave out Covers, Chain and Part of when they don't apply. The Risk transport part applies to MCP servers only; for other types, write "talks to …" right after the access part. Every Exchange link ends with `?utm_source=exchange-finder&utm_medium=skill`. GitHub links have no tag.
-6. If there are no strong picks: replace **Best matches** with "Nothing on the Exchange fits this well." Then **Also related**, then: "If you build one, `cyberagents-exchange-submit` helps you list it."
-7. This line, verbatim: `Tiers: contributed = baseline review only, not a comprehensive security audit · vetted = security review of one specific commit.`
-8. This disclaimer, verbatim, on its own line:
+   Leave out the optional lines when they don't apply. The Risk transport part applies to MCP servers only; for other types, write "talks to …" right after the access part. Every Exchange link ends with `?utm_source=exchange-finder&utm_medium=skill`. GitHub links have no tag.
+7. If there are no strong picks: replace **Best matches** with "Nothing on the Exchange fits this well." Then **Also related**, then: "If you build one, `cyberagents-exchange-submit` helps you list it."
+8. This line, verbatim: `Tiers: contributed = baseline review only, not a comprehensive security audit · vetted = security review of one specific commit.`
+9. This disclaimer, verbatim, on its own line:
    Community-built listings, presented for evaluation, not endorsement. Review the code and permissions before using in production.
 
 The **At a glance** table is the only table. Everything else uses plain markdown lists. Output only this shape: no extra summary sections, and no list of dropped candidates beyond a one-line note.
 
-**7. Follow-ups** ("compare 1 and 3", "anything vetted?") use the data you already fetched. Only fetch again for a listing you haven't confirmed.
+**7. Follow-ups** ("details 4", "compare 1 and 3", "anything vetted?") use the data you already fetched. For "details <n>", show that pick's full card in the Step 6 template, running its repo check first if it wasn't checked. Only fetch again for a listing you haven't confirmed.
 
 ## Red flags: stop and correct
 
@@ -164,7 +164,8 @@ The **At a glance** table is the only table. Everything else uses plain markdown
 - Showing a playbook without fetching and ranking its Exchange chain steps
 - An access verdict without (declared) or (inferred)
 - Showing a slug where the listing's name belongs
-- A fetched chain step with no card of its own
+- A fetched chain step with no table row of its own
+- A full card for a related pick (related picks get one line until the user asks for details)
 
 ## Reference
 
@@ -266,7 +267,8 @@ These set the first part of the card's **Risk** line and the at-a-glance access 
 The exact template is in Step 6. Cards are plain markdown lists (only At a glance is a table), and never use an invented value.
 
 - **Risk** = access (Access rules) · transport, for MCP servers only (`runs locally (stdio)`, `connects over the network (http)`, `local or network (both)`) · `talks to <integrations>`.
-- **Trust** = trust wording (below) · `last reviewed <N> months ago`, using `last_reviewed`, else `date_added`. Under one month, write `under a month ago`; the same applies to "pushed" on the Project line.
+- **Trust** appears for vetted picks only (trust wording below). Contributed picks need no Trust line, because the table says "contributed" and the Tiers line explains it.
+- **Listing reviewed** (on the Project line) uses `last_reviewed`, else `date_added`. Under one month, write `under a month ago`; the same applies to "pushed".
 - **⚠ Watch** appears only when there's at least one flag. Flags, separated by `; `:
   - `repo archived`
   - `repo owner <owner> ≠ listed author <author>`
@@ -280,8 +282,7 @@ The exact template is in Step 6. Cards are plain markdown lists (only At a glanc
   - `` `url` field points to `<domain>` ``
 - **Project** = from the repo check: `owner.type` (`Organization` → organization, `User` → personal account), stars, forks, open issues, last push. Facts only, no judgement words.
 - **Effort** is fixed by type, so it's the same every time: skill → `low` (instructions only) · mcp-server → `medium` (a server to run plus credentials) · agent → `high` (a self-hosted program) · playbook → `high` (several components). Never guess beyond this table.
-- **You'll need** = products from `integrations`, leaving out Anthropic (that's just the AI assistant).
-- **Setup** = platform fit · `runs as <runtime, auth_method>` · `invoke <invocation>` (skills only) · the read-only key tip for write-capable MCP servers with key or token auth.
+- **Setup** = `needs <products from integrations, leaving out Anthropic>` · `runs as <runtime, auth_method>` · `invoke <invocation>` (skills only) · a platform note only when the table says not stated or no · the read-only key tip for write-capable MCP servers with key or token auth.
 
 ### Trust wording
 
