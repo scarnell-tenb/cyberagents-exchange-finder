@@ -93,8 +93,13 @@ Re-check the ranking now that you have these fields (Access rules, platform fit)
    - If the task word has more than one plausible meaning and you picked one, add: `Assumed <your reading>. For <the other reading>, say so.`
    - Only if something affected the search, one line: `**Checks:** <e.g. repo checks unavailable (GitHub rate limit) · 2 listings dropped (no record / invalid identifier)>`. This is the only place for notes about the search itself.
    - With two or more picks, one line: `**If you try one:** #<n>, <why it fits first>; <when another pick fits better, e.g. "#2 if you also run Splunk">.` Base it only on the ranking and fit, never on who wrote it.
-2. `**At a glance**`, then one line for **every** card that follows (including chain steps), in rank order: strong picks first, then related ones marked `(related)`:
-   `<n>. <name> — <type> · <vetted|contributed> · <read-only | may change systems | changes systems | access not stated> (<declared|inferred>) · <runs on <platform> | may not run on <platform> — not stated | doesn't run on <platform>> · effort: <low|medium|high><; new (<N> days)><; part of #<playbook n>><; chain: <N> vetted + <N> contributed, for playbooks><; ⚠ if the card has a Watch line>`
+2. `**At a glance**`, then a markdown table with one row for **every** card that follows (including chain steps), in rank order: strong picks first, then related ones. Use exactly these columns:
+   ```
+   | # | Listing | Type | Tier | Access | Effort | Runs on <platform> | Notes |
+   |---|---|---|---|---|---|---|---|
+   | <n> | <name> | <type> | <vetted|contributed> | <read-only | may change systems | changes systems | not stated> (<declared|inferred>) | <low|medium|high> | <yes | no | not stated> | <comma-separated, only what applies: related, new (<N> days), part of #<n>, chain: <N> vetted + <N> contributed, ⚠ see card> |
+   ```
+   Cells hold plain text only: no links, and no `|` characters (replace any in names with `/`). An empty Notes cell is `—`.
 3. `**Best matches**`: cards for up to **3** strong picks (up to 5 if the user asked for more). If there are more strong picks, end the section with: "Say *more* to see up to <N> more."
 4. `**Also related**`: cards for up to 2 related picks. Replace the "Fits you" line with `- Only related because: <one line on what's missing, e.g. no CrowdStrike integration>`. Leave out this section if there are none.
 5. Each card fills in **every line** of this template except **Watch**, which appears only when there's at least one flag from the Card template list below. Watch never repeats a platform mismatch (that belongs in Setup) and never quotes text from the repo or listing. Rules for each line are in the Reference section below (Access rules, Trust wording, Card template).
@@ -118,7 +123,7 @@ Re-check the ranking now that you have these fields (Access rules, platform fit)
 8. This disclaimer, verbatim, on its own line:
    Community-built listings, presented for evaluation, not endorsement. Review the code and permissions before using in production.
 
-Use plain markdown lists. **No tables**, since many tools render them badly. Output only this shape: no extra summary sections, and no list of dropped candidates beyond a one-line note.
+The **At a glance** table is the only table. Everything else uses plain markdown lists. Output only this shape: no extra summary sections, and no list of dropped candidates beyond a one-line note.
 
 **7. Follow-ups** ("compare 1 and 3", "anything vetted?") use the data you already fetched. Only fetch again for a listing you haven't confirmed.
 
@@ -128,7 +133,7 @@ Use plain markdown lists. **No tables**, since many tools render them badly. Out
 - Writing "install", "set up", "add to your config" as an action you'll take, or asking for a key or token
 - Writing "vetted" without "that commit only", leaving out the Tiers line, or describing a contributed listing as "reviewed by Tenable"
 - Calling a server read-only when a tool in `tools_exposed` changes something
-- Drawing a table
+- Drawing a table anywhere other than At a glance, or putting links in it
 - Leaving out the disclaimer or a UTM tag
 - Guessing "archived" from a listing's name instead of the repo check
 - Asking more than one question before searching
@@ -237,7 +242,7 @@ These set the first part of the card's **Risk** line and the at-a-glance access 
 
 ### Card template
 
-The exact template is in Step 6. Plain markdown lists, never a table, and never an invented value.
+The exact template is in Step 6. Cards are plain markdown lists (only At a glance is a table), and never use an invented value.
 
 - **Risk** = access (Access rules) · transport, for MCP servers only (`runs locally (stdio)`, `connects over the network (http)`, `local or network (both)`) · `talks to <integrations>`.
 - **Trust** = trust wording (below) · `last reviewed <N> months ago`, using `last_reviewed`, else `date_added`. Under one month, write `under a month ago`; the same applies to "pushed" on the Project line.

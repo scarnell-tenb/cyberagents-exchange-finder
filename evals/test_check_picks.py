@@ -57,9 +57,15 @@ class CheckPicksTest(unittest.TestCase):
         failures = self.check(good_transcript().replace(TIERS, ""))
         self.assertTrue(any("Tiers" in f for f in failures))
 
-    def test_table_row_fails(self):
+    def test_table_row_outside_at_a_glance_fails(self):
         failures = self.check(good_transcript() + "| Name | Tier |\n")
         self.assertTrue(any("table" in f for f in failures))
+
+    def test_at_a_glance_table_passes(self):
+        glance = ("**At a glance**\n\n| # | Name | Tier |\n|---|---|---|\n| 1 | Good | contributed |\n\n"
+                  "**Best matches**\n")
+        text = good_transcript().replace("\n\n1. **[Good]", "\n\n" + glance + "1. **[Good]", 1)
+        self.assertEqual(self.check(text), [])
 
     def test_install_phrasing_fails(self):
         failures = self.check(good_transcript() + "You should install Good MCP.\n")

@@ -34,6 +34,11 @@ def load_index(source=LIVE_INDEX):
     return {(row["type"], row["slug"]) for row in rows}
 
 
+def outside_at_a_glance(text):
+    # The At a glance section runs from its heading to the next bold heading line.
+    return re.sub(r"\*\*At a glance\*\*.*?(?=^\*\*[A-Z])", "", text, flags=re.S | re.M)
+
+
 def check(text, index):
     failures = []
     links = LINK.findall(text)
@@ -51,8 +56,8 @@ def check(text, index):
         failures.append("Tiers line missing or altered")
     if links and DISCLAIMER not in text:
         failures.append("disclaimer missing or altered")
-    if TABLE_ROW.search(text):
-        failures.append("markdown table row present")
+    if TABLE_ROW.search(outside_at_a_glance(text)):
+        failures.append("markdown table row outside the At a glance section")
     for m in INSTALL.finditer(text):
         failures.append(f"install phrasing: '{m.group(0)}'")
     return failures
