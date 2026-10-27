@@ -1,6 +1,19 @@
 # Eval results — v0.1.0
 
-**Final run: 2026-10-27, on commit `b35b357` (this exact `SKILL.md`, after the cross-Claude portability changes).** Claude Code 2.1.308. Each run happens in a fresh temp directory outside the repo, with the user's normal plugins loaded.
+## What was tested on this version
+
+The **full run** (21 scenarios, 6 practitioner searches, trigger test) was on commit `b35b357` (2026-10-27). Two output-only changes came after it, each tested with targeted runs:
+
+| Change | Tested with | Result |
+|---|---|---|
+| Slimmer answers: full cards only for best matches, one-line related picks, "details N" on request | PHP2Shell search; PCI/STIG compliance search | Both pass all automated checks. PHP2Shell: 517 words (was about 1,100), 52s, $0.01. PCI/STIG: 645 words, 64s, $0.02 |
+| Ranking tie-break: lower setup effort before alphabetical order | "Prioritize Tenable findings for AWS" | Passes. The dependency-free skill now ranks above the MCP server built on the same engine. 83s, $0.02 |
+
+Neither change touches fetching, validation or safety rules. Those are covered by the full run below.
+
+## Full run
+
+Run on 2026-10-27 on commit `b35b357` (after the cross-Claude portability changes), with Claude Code 2.1.308. Each run happens in a fresh temp directory outside the repo, with the user's normal plugins loaded.
 
 ## How it's checked
 

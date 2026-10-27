@@ -239,7 +239,8 @@ Apply in this exact order. Each step only breaks ties left by the steps before i
 4. **Read-only before write-capable**, when fits are similar (see Access rules).
 5. **Vetted before contributed.**
 6. **Runs on the user's platform** before "not stated", and "not stated" before "no".
-7. **Slug**, alphabetically.
+7. **Lower setup effort first:** low, then medium, then high (see Effort).
+8. **Slug**, alphabetically.
 
 Show up to 3 strong picks by default (5 if the user asks for more) plus up to 2 related picks; Step 6 defines both groups. Tenable or Hexa compatibility never counts as fit on its own. If nothing is strong, the answer is "Nothing on the Exchange fits this well", followed by the related picks.
 
