@@ -42,7 +42,7 @@ Restart Claude Code. Invoke it with `/cyberagents-exchange-finder`, or just ask 
 These run skills in Anthropic's code-execution sandbox, so the skill fetches the Exchange from there, not from your machine.
 
 1. Make sure code execution is enabled. On Team and Enterprise plans, an admin must also enable Skills.
-2. Download `cyberagents-exchange-finder.zip` from this repo's Releases page, or zip a folder named exactly `cyberagents-exchange-finder` that contains `SKILL.md`.
+2. Download this repo (**Code → Download ZIP**), unzip it, rename the folder to exactly `cyberagents-exchange-finder`, and zip that folder again. The folder name must match the skill name.
 3. In Claude, open **Customize → Skills → + → Create skill → Upload a skill**, and upload the ZIP.
 4. If your organization restricts code-execution network access, allow `exchange.tenable.com` and `api.github.com`.
 5. Ask "what's on the CyberAgents Exchange for …".
