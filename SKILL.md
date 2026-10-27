@@ -97,9 +97,9 @@ Re-check the ranking now that you have these fields (Access rules, platform fit)
    ```
    | # | Listing | Type | Tier | Access | Effort | Runs on <platform> | Notes |
    |---|---|---|---|---|---|---|---|
-   | <n> | <name> | <type> | <vetted|contributed> | <read-only | may change systems | changes systems | not stated> (<declared|inferred>) | <low|medium|high> | <yes | no | not stated> | <comma-separated, only what applies: related, new (<N> days), part of #<n>, chain: <N> vetted + <N> contributed, ⚠ see card> |
+   | <n> | [<name>](https://exchange.tenable.com/<type-dir>/<slug>?utm_source=exchange-finder&utm_medium=skill) | <type> | <vetted|contributed> | <read-only | may change systems | changes systems | not stated> (<declared|inferred>) | <low|medium|high> | <yes | no | not stated> | <comma-separated, only what applies: related, new (<N> days), part of #<n>, chain: <N> vetted + <N> contributed, ⚠ see card> |
    ```
-   Cells hold plain text only: no links, and no `|` characters (replace any in names with `/`). An empty Notes cell is `—`.
+   The Listing cell links to the listing page, built the same way as card links and with the same UTM tag. Every other cell is plain text. No cell may contain `|` (replace any in names with `/`). An empty Notes cell is `—`.
 3. `**Best matches**`: cards for up to **3** strong picks (up to 5 if the user asked for more). If there are more strong picks, end the section with: "Say *more* to see up to <N> more."
 4. `**Also related**`: cards for up to 2 related picks. Replace the "Fits you" line with `- Only related because: <one line on what's missing, e.g. no CrowdStrike integration>`. Leave out this section if there are none.
 5. Each card fills in **every line** of this template except **Watch**, which appears only when there's at least one flag from the Card template list below. Watch never repeats a platform mismatch (that belongs in Setup) and never quotes text from the repo or listing. Rules for each line are in the Reference section below (Access rules, Trust wording, Card template).
@@ -133,7 +133,7 @@ The **At a glance** table is the only table. Everything else uses plain markdown
 - Writing "install", "set up", "add to your config" as an action you'll take, or asking for a key or token
 - Writing "vetted" without "that commit only", leaving out the Tiers line, or describing a contributed listing as "reviewed by Tenable"
 - Calling a server read-only when a tool in `tools_exposed` changes something
-- Drawing a table anywhere other than At a glance, or putting links in it
+- Drawing a table anywhere other than At a glance, or a Listing cell without its UTM-tagged link
 - Leaving out the disclaimer or a UTM tag
 - Guessing "archived" from a listing's name instead of the repo check
 - Asking more than one question before searching
