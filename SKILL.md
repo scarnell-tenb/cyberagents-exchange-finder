@@ -45,7 +45,12 @@ This skill is the whole workflow for the request. Start at Step 1 straight away;
 **1. Understand the need.** From the conversation, get the *task*, the user's *tools* (products they run) and their *AI platform* (Claude Code, Claude Desktop, Cursor…). If you can't tell the task at all, ask **one** question about it and stop. Otherwise go on, noting anything you're assuming.
 
 **2. Get the index.**
-- *Local mode:* if the user gives a path to a `listings.json`, use your file-read tool on it and on the detail records in the folder they name. Don't use `jq`, `cp` or the shell on local files. If you can't read the file, say so and stop. **Never switch to the live index** when the user asked for a local copy. Skip GitHub checks unless they say the network is available. Label the answer "From your local copy of the index".
+- *Local mode:* if the user gives a path to a `listings.json`, use it and the detail records in the folder they name.
+  - Use `jq` or other shell tools on those files wherever your tool allows it. For the index, the same projection works: `jq -c '.[] | [.type,.slug,.tier,.name,.integrations,.tags,(.description[0:160])]' '<path>'`.
+  - If a shell command is blocked, for example because the file is outside the allowed folders, use your file-read tool on the files instead.
+  - If the file isn't at the path the user gave, say so and stop. Don't search the disk for it.
+  - If you can't read the files at all, say so and stop.
+  - **Never switch to the live index** when the user asked for a local copy. Skip GitHub checks unless they say the network is available. Label the answer "From your local copy of the index".
 - *Otherwise,* if you have a shell:
   - The index is a single ~80 KB line, which file readers truncate. Fetch it **once**, as one listing per line, with exactly this command:
     `curl -sS -f 'https://exchange.tenable.com/api/listings.json' | jq -c '.[] | [.type,.slug,.tier,.name,.integrations,.tags,(.description[0:160])]'`
