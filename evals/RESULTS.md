@@ -9,7 +9,9 @@ The **full run** (21 scenarios, 6 practitioner searches, trigger test) was on co
 | Slimmer answers: full cards only for best matches, one-line related picks, "details N" on request | PHP2Shell search; PCI/STIG compliance search | Both pass all automated checks. PHP2Shell: 517 words (was about 1,100), 52s, $0.01. PCI/STIG: 645 words, 64s, $0.02 |
 | Ranking tie-break: lower setup effort before alphabetical order | "Prioritize Tenable findings for AWS" | Passes. The dependency-free skill now ranks above the MCP server built on the same engine. 83s, $0.02 |
 
-Neither change touches fetching, validation or safety rules. Those are covered by the full run below.
+| Switch to the Exchange's new API: `listings.jsonl`, plus repo health from the Exchange's `repo` object | PHP2Shell (twice), SOC triage, PCI/STIG (plain-language trigger), S13 (fixtures with no `repo`, so the GitHub fallback runs) | All live searches pass with **zero GitHub calls**. PHP2Shell: 61–63s, $0.01–0.06. SOC triage: 41s, $0.01. PCI/STIG on the session model: 112s, $0.44. S13's fallback made its GitHub checks and flagged correctly; it failed only on the cosmetic opening sentence |
+
+The first two changes didn't touch fetching, validation or safety rules. The API switch changed fetching only: validation and safety rules are unchanged, and the full run below still covers them.
 
 ## Full run
 

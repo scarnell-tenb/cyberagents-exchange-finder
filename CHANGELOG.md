@@ -2,6 +2,8 @@
 
 ## 0.1.0 — unreleased
 
+- **Uses the Exchange's agent-friendly API** (live since 2026-10-28): reads `listings.jsonl` and takes repo health and vetted drift from each listing's `repo` object, so a normal search makes no GitHub calls. Older deployments and listings without health data fall back to the previous GitHub checks.
+
 First version: find and evaluate CyberAgents Exchange listings for a security task.
 
 - **Live data only.** Reads the Exchange's public index on every request, confirms each pick against its detail record, and never answers from memory.

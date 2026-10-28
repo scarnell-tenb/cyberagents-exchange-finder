@@ -91,11 +91,11 @@ Every outbound request the skill makes:
 
 | Destination | Why | What's sent |
 |---|---|---|
-| `https://exchange.tenable.com/api/listings.json` | listing index | plain GET, no parameters |
-| `https://exchange.tenable.com/api/<type>/<slug>.json` | each pick's full record | plain GET, no parameters |
+| `https://exchange.tenable.com/api/listings.jsonl` | listing index, one listing per line (falls back to `listings.json`) | plain GET, no parameters |
+| `https://exchange.tenable.com/api/<type>/<slug>.json` | each pick's full record, including the Exchange's repo-health snapshot | plain GET, no parameters |
 | `https://exchange.tenable.com/llms-full.txt` | vocabulary lookup, only for an unrecognized term | plain GET, no parameters |
-| `https://api.github.com/repos/<owner>/<repo>` | archived / owner / last-push / project-health check, for best matches and vetted picks only | plain GET, unauthenticated. If your GitHub CLI is already signed in, the skill uses read-only `gh repo view` instead, with your own token, which goes only to GitHub |
-| `https://api.github.com/repos/<owner>/<repo>/compare/<sha>...HEAD` | vetted listings only: has the code changed since review | plain GET, unauthenticated |
+| `https://api.github.com/repos/<owner>/<repo>` | fallback only: when the Exchange has no repo-health data for a pick | plain GET, unauthenticated, or read-only `gh repo view` if your GitHub CLI is signed in |
+| `https://api.github.com/repos/<owner>/<repo>/compare/<sha>...HEAD` | fallback only: vetted-drift check when the Exchange has no health data | plain GET, unauthenticated |
 
 - **This skill sends nothing you type to the Exchange or GitHub.** None of the URLs contain your task, tools or environment. (Your conversation still goes to whichever AI provider your assistant uses, as usual.)
 - **Link tagging:** links to Exchange listing pages carry a fixed `?utm_source=exchange-finder&utm_medium=skill` so the Exchange can count visits that came from this skill. It's the same for everyone and contains nothing about you or your query. GitHub links aren't tagged.
@@ -109,7 +109,7 @@ Give the skill a local copy: download `https://exchange.tenable.com/api/listings
 ## Known limitations
 
 - It depends on the Exchange's live data. If `exchange.tenable.com` is unreachable or blocked, the skill says so and stops; it never answers from memory.
-- **GitHub's limit:** about 60 unauthenticated requests an hour, shared by everyone on the same network. A search uses about 3–5 of them, because only the best matches and vetted picks are checked. Searches never wait: if the limit is hit, they still answer, and the repo-health details show `repo status unknown`. If you have the GitHub CLI (`gh`) signed in, repo checks use your own 5,000-an-hour limit instead. Nothing needs installing either way.
+- **Repo health comes from the Exchange,** which refreshes it whenever the site rebuilds. Cards show "health as of <date>". The skill calls GitHub only for a pick the Exchange has no health data for, which is rare.
 - The **Access** line is inferred from listing metadata: MCP tool names and descriptions, and for other types the description. It's a starting point for your review, not a guarantee.
 - Agents and playbooks don't declare which AI tools they support, so their cards say "not stated by listing — check the repo".
 - It reads listing metadata only, never repository code. The Exchange tier tells you how far a listing has been reviewed: *contributed* = baseline review, *vetted* = security review of one specific commit.

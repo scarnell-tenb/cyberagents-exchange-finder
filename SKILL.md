@@ -7,6 +7,8 @@ allowed-tools:
   - Bash(curl -sS 'https://api.github.com/repos/*)
   - Bash(jq -c '.[] | [.type,.slug,.tier,.name,.integrations,.tags,(.description[0:160])]')
   - Bash(jq -c '[.type,.slug,.tier,.author,.github_url,.vetted_commit_sha,.vetted_on,.last_reviewed,.date_added,.compatible_platforms,.compatible_clients,.transport,.runtime,.auth_method,.invocation,.url,[.tools_exposed[]? | [.name,.description]],[.agents_used[]? | [.name,.type,.ref]]]')
+  - Bash(jq -c '[.type,.slug,.tier,.author,.github_url,.vetted_commit_sha,.vetted_on,.last_reviewed,.date_added,.compatible_platforms,.compatible_clients,.transport,.runtime,.auth_method,.invocation,.url,[.tools_exposed[]? | [.name,.description]],[.agents_used[]? | [.name,.type,.ref]],.repo]')
+  - Bash(jq -c '[.type,.slug,.tier,.name,.integrations,.tags,(.description[0:160])]')
   - Bash(jq -c '[.full_name,.archived,.pushed_at,.language,.stargazers_count,.forks_count,.open_issues_count,.owner.type,.ahead_by,.status,.message,.url]')
   - Bash(gh auth status)
   - Bash(gh repo view *)
@@ -55,13 +57,13 @@ This skill is the whole workflow for the request. Start at Step 1 straight away;
   - **Never switch to the live index** when the user asked for a local copy. Skip GitHub checks unless they say the network is available. Label the answer "From your local copy of the index".
 - *Otherwise,* fetch it live. This works in every Claude environment: Claude Code on your machine, or the code-execution sandbox in Claude Desktop, claude.ai and Cowork. Never install anything; use only tools already there.
 - If you have a shell:
-  - The index is a single ~80 KB line, which file readers truncate. Fetch it **once**, as one listing per line, with exactly this command:
-    `curl -sS -f 'https://exchange.tenable.com/api/listings.json' | jq -c '.[] | [.type,.slug,.tier,.name,.integrations,.tags,(.description[0:160])]'`
+  - Fetch the line-per-listing index **once**. With `jq`, trim it to what ranking needs:
+    `curl -sS -f 'https://exchange.tenable.com/api/listings.jsonl' | jq -c '[.type,.slug,.tier,.name,.integrations,.tags,(.description[0:160])]'`
   - Each row is `[type, slug, tier, name, integrations, tags, description (first 160 chars)]`.
-  - If `jq` isn't available, run the same `curl` and make the same one-row-per-listing projection with any JSON tool already in your environment. Never install one.
-  - If there's no JSON tool, use the web-fetch fallback below.
+  - Without `jq`, run plain `curl -sS -f 'https://exchange.tenable.com/api/listings.jsonl'`. Each line is one complete listing, short enough to read as is.
   - If your tool saved the output to a file, read that file. Each line is one listing.
-- *Without a shell,* use your web-fetch tool and ask it to return the JSON **verbatim, every row**. Summarizing fetchers drop rows, so Step 4 confirms every pick.
+  - If `listings.jsonl` returns 404 (an older deployment), fall back to `curl -sS -f 'https://exchange.tenable.com/api/listings.json' | jq -c '.[] | [.type,.slug,.tier,.name,.integrations,.tags,(.description[0:160])]'`.
+- *Without a shell,* use your web-fetch tool on `https://exchange.tenable.com/api/listings.jsonl` and ask it to return the lines **verbatim, every row**. Summarizing fetchers drop rows, so Step 4 confirms every pick.
 - If the fetch fails or the domain is blocked, say: "I couldn't reach the CyberAgents Exchange (https://exchange.tenable.com/api/listings.json). Allow that domain (in the Claude apps, it's your code-execution network settings), or give me a local copy of the file." Then stop.
 - If the index has more than ~300 rows, filter by `type` before reading it all.
 
@@ -72,8 +74,8 @@ This skill is the whole workflow for the request. Start at Step 1 straight away;
 Keep only what you'll show: up to 3 strong (5 if the user asked for more) and up to 2 related.
 
 **4. Confirm the candidates in one command.** Fetch every candidate's detail URL in a single call, on one line, exactly like this:
-`curl -sS -f '<detail url 1>' '<detail url 2>' … | jq -c '[.type,.slug,.tier,.author,.github_url,.vetted_commit_sha,.vetted_on,.last_reviewed,.date_added,.compatible_platforms,.compatible_clients,.transport,.runtime,.auth_method,.invocation,.url,[.tools_exposed[]? | [.name,.description]],[.agents_used[]? | [.name,.type,.ref]]]'`
-- One row per listing that exists: `[type, slug, tier, author, github_url, vetted_commit_sha, vetted_on, last_reviewed, date_added, compatible_platforms, compatible_clients, transport, runtime, auth_method, invocation, url, tools [[name, description]…], agents_used [[name, type, ref]…]]`.
+`curl -sS -f '<detail url 1>' '<detail url 2>' … | jq -c '[.type,.slug,.tier,.author,.github_url,.vetted_commit_sha,.vetted_on,.last_reviewed,.date_added,.compatible_platforms,.compatible_clients,.transport,.runtime,.auth_method,.invocation,.url,[.tools_exposed[]? | [.name,.description]],[.agents_used[]? | [.name,.type,.ref]],.repo]'`
+- One row per listing that exists: `[type, slug, tier, author, github_url, vetted_commit_sha, vetted_on, last_reviewed, date_added, compatible_platforms, compatible_clients, transport, runtime, auth_method, invocation, url, tools [[name, description]…], agents_used [[name, type, ref]…], repo]`. `repo` is the Exchange's repo-health snapshot (see Step 5).
 - A listing that fails to load prints a curl error instead of a row. Drop it, and don't mention it as a pick.
 - In local mode, read the detail files instead.
 
@@ -86,7 +88,18 @@ From each record, read:
 
 Re-check the ranking now that you have these fields (Access rules, platform fit).
 
-**5. Repo checks** (skip in local mode unless the network is available). Check only the **Best matches** cards and any **vetted** pick, since review drift matters wherever it appears. Related contributed picks aren't checked: their Project line reads `not checked (related pick)`. This keeps GitHub's unauthenticated limit (60 calls an hour, shared by everyone on the same network) for the picks that matter.
+**5. Repo health.** The Exchange publishes it in each detail record's `repo` object, refreshed when the site rebuilds. Use it for every pick and make **no GitHub calls**:
+- `found: false` → `repo not found`.
+- `archived: true` → `repo archived`.
+- `pushed_at` more than 12 months ago → `no pushes in 12+ months`.
+- `language` null, for agents and MCP servers only → `no code detected in repo`.
+- `commits_since_vetted` above 0 → `code has changed since review (<N> commits ahead)`.
+- `vetted_commit_found: false` → `reviewed commit not found in repo`.
+- The Project line uses `owner_type`, `stars`, `forks`, `open_issues` and `pushed_at`, and ends with `health as of <checked_at date>`.
+- Stars are popularity, not safety.
+- For the owner check, compare the owner in `github_url` with `author`, case-insensitively.
+
+**Only when a pick has no `repo` object** (absent means unknown), or in local mode with the network available, check GitHub yourself for that pick, as below. Check only the **Best matches** cards and any **vetted** pick. Related contributed picks without `repo` get a Project line of `not checked (related pick)`.
 
 **If the user's GitHub CLI is signed in, use it.** It has its own limit of 5,000 calls an hour per person.
 - Run `gh auth status` once. If it succeeds, check every repo with read-only `gh repo view` calls, all in one shell command joined with ` ; `:
@@ -135,7 +148,7 @@ Re-check the ranking now that you have these fields (Access rules, platform fit)
       - Risk: <the detail behind the table's Access word, from Access rules> · <runs locally (stdio) | connects over the network (http) | local or network (both)> · talks to <integrations except Anthropic, or "your AI assistant only">
       - Trust: <vetted picks only: security review of commit <sha7> (<vetted_on>), that commit only, [reviewed code](https://github.com/<owner>/<repo>/tree/<full vetted_commit_sha>) | reviewed commit not verifiable>
       - ⚠ Watch: <flags, separated by "; ">
-      - Project: <organization | personal account> · <N> stars · <N> forks · <N> open issues · pushed <N> months ago · listing reviewed <N> months ago<; or "repo status unknown" when checks failed>
+      - Project: <organization | personal account> · <N> stars · <N> forks · <N> open issues · pushed <N> months ago · listing reviewed <N> months ago · health as of <date from repo.checked_at><; or "repo status unknown" when checks failed>
       - Setup: needs <products from integrations except Anthropic, or "nothing beyond your AI assistant"> · runs as <runtime, auth_method, or "instructions only" for skills> · invoke <invocation, skills only><; "check the repo for <platform> support" when the table says not stated or no><; for an MCP server with write tools and api-key/token auth: "give the key read-only scope unless you need <write tool names>">
    ```
    Leave out the optional lines when they don't apply. The Risk transport part applies to MCP servers only; for other types, write "talks to …" right after the access part. Every Exchange link ends with `?utm_source=exchange-finder&utm_medium=skill`. GitHub links have no tag.
