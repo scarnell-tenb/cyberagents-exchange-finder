@@ -33,5 +33,5 @@ First version: find and evaluate CyberAgents Exchange listings for a security ta
 - **Privacy:** only plain GETs to `exchange.tenable.com` and `api.github.com`, and nothing the user types goes into a request. Exchange links carry a fixed `utm_source=exchange-finder` tag.
 - **Claude Code:**
   - `model: haiku` applies when the skill is started with `/cyberagents-exchange-finder`.
-  - `allowed-tools` pre-approves only the skill's own fetches and its three exact `jq` filters.
+  - `allowed-tools` pre-approves `curl` commands that start with an Exchange or GitHub API URL, the skill's exact `jq` filters, read-only `gh auth status` and `gh repo view`, and web fetch for those two domains.
 - **Fallbacks:** web fetch when there's no shell, and a local index copy for locked-down networks.
