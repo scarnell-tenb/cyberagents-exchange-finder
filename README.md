@@ -37,7 +37,7 @@ git clone https://github.com/scarnell-tenb/cyberagents-exchange-finder ~/.claude
 
 Restart Claude Code. Invoke it with `/cyberagents-exchange-finder`, or just ask "what's on the Exchange for …".
 
-### Claude Desktop, claude.ai and Cowork (preview: being verified)
+### Claude Desktop, claude.ai and Cowork
 
 These apps run skills in Anthropic's code-execution sandbox, so the skill fetches the Exchange from there, not from your machine.
 
@@ -56,7 +56,7 @@ The zip's `SKILL.md` is the repo file minus one frontmatter line, `model: haiku`
 
 ### Other AI tools
 
-Version 0.1.0 is fully tested on Claude Code. The Claude apps above are in preview. `SKILL.md` follows the open Agent Skills format with plain instructions and no Claude-specific tools, so other assistants that load Agent Skills and can fetch URLs may work. They haven't been tested yet, and the Exchange listing declares Claude Code only. If you try it elsewhere, please open an issue with what happened.
+Version 0.1.0 supports Claude Code, Claude Desktop and Claude Cowork, which is what the Exchange listing declares. The automated eval suite runs on Claude Code. The Claude apps load the same `SKILL.md` through their code-execution sandbox, including the no-shell fallback that the evals cover. `SKILL.md` follows the open Agent Skills format with plain instructions and no Claude-specific tools, so other assistants that load Agent Skills and can fetch URLs may work, but they haven't been tested. If you try it elsewhere, please open an issue with what happened.
 
 ## How to use
 
@@ -124,6 +124,7 @@ Give the skill a local copy: download the files listed in `https://exchange.tena
 
 ## Known limitations
 
+- **Claude Desktop and Cowork** speed and cost depend on the model you've chosen there. The `model: haiku` shortcut applies in Claude Code only.
 - It depends on the Exchange's live data. If `exchange.tenable.com` is unreachable or blocked, the skill says so and stops; it never answers from memory.
 - **Repo health comes from the Exchange,** which refreshes it whenever the site rebuilds. Cards show "health as of <date>". The skill calls GitHub only for a pick the Exchange has no health data for, which is rare.
 - The **Access** line is inferred from listing metadata: MCP tool names and descriptions, and for other types the description. It's a starting point for your review, not a guarantee.
