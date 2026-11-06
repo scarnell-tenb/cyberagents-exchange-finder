@@ -1,2 +1,16 @@
 evals/runs/
 .superpowers/
+# Secrets and local credentials - never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+# Local build and editor clutter
+__pycache__/
+*.pyc
+.DS_Store

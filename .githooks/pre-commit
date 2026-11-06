@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Rebuild the Claude apps skill zip whenever its sources are part of a commit, and stage it.
+# Enable once per clone:  git config core.hooksPath .githooks
+if git diff --cached --name-only | grep -qE '^(SKILL\.md|README\.md|LICENSE|VERSION)$'; then
+  python3 scripts/build_release.py >/dev/null && git add dist/
+fi

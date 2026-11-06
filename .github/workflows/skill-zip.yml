@@ -1,0 +1,59 @@
+name: Skill zip
+
+# Keeps dist/cyberagents-exchange-finder.zip (the Claude Desktop / claude.ai / Cowork upload)
+# in step with the sources.
+#  - Pull requests: run the checker tests, fail if the zip is stale, and warn if
+#    SKILL.md changed without a VERSION bump.
+#  - Pushes to main: run the tests, then rebuild the zip and commit it back if stale.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run the checker unit tests
+        run: python3 -I evals/test_check_picks.py
+
+      - name: Check the zip matches the sources (pull requests)
+        if: github.event_name == 'pull_request'
+        run: |
+          python3 scripts/build_release.py --check || {
+            echo "::error file=dist::The skill zip is stale. Run 'python3 scripts/build_release.py' and commit dist/."
+            exit 1
+          }
+
+      - name: Warn when SKILL.md changes without a VERSION bump (pull requests)
+        if: github.event_name == 'pull_request'
+        run: |
+          BASE="origin/${{ github.base_ref }}"
+          CHANGED=$(git diff --name-only "$BASE"...HEAD -- SKILL.md | wc -l)
+          BUMPED=$(git diff --name-only "$BASE"...HEAD -- VERSION | wc -l)
+          if [ "$CHANGED" -gt 0 ] && [ "$BUMPED" -eq 0 ]; then
+            echo "::warning file=VERSION::SKILL.md changed but VERSION did not. Bump VERSION and metadata.version so users can tell their upload is out of date."
+          fi
+
+      - name: Rebuild and commit the zip if stale (main)
+        if: github.event_name != 'pull_request'
+        run: |
+          python3 scripts/build_release.py
+          if git diff --quiet -- dist/ && [ -z "$(git ls-files --others --exclude-standard dist/)" ]; then
+            echo "Zip already up to date."
+          else
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add dist/
+            git commit -m "Rebuild skill zip for v$(cat VERSION) [skip ci]"
+            git push
+          fi

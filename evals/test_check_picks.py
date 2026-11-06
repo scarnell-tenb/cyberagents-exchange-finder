@@ -80,8 +80,16 @@ class CheckPicksTest(unittest.TestCase):
         failures = self.check(text)
         self.assertTrue(any("exchange-tenable.example" in f and "host" in f for f in failures))
 
-    def test_github_links_allowed(self):
-        self.assertEqual(self.check(good_transcript() + "repo https://github.com/tarhou/x\n"), [])
+    def test_github_link_fails(self):
+        failures = self.check(good_transcript() + "[repo](https://github.com/tarhou/x)\n")
+        self.assertTrue(any("github.com" in f for f in failures))
+
+    def test_bare_github_url_fails(self):
+        failures = self.check(good_transcript() + "code at https://github.com/tarhou/x/tree/abc123\n")
+        self.assertTrue(any("github.com" in f for f in failures))
+
+    def test_repo_named_as_plain_text_passes(self):
+        self.assertEqual(self.check(good_transcript() + "Watch: repo owner tarhou ≠ listed author x\n"), [])
 
     def test_live_fetch_sends_non_default_user_agent(self):
         ua = check_picks.index_request("https://example.test/x.json").get_header("User-agent")

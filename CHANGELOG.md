@@ -2,6 +2,8 @@
 
 ## 0.1.0 — unreleased
 
+- **Answers link only to the Exchange.** Cards no longer link to GitHub repos or reviewed commits. Each listing page links to the repo, so traffic goes to exchange.tenable.com. The vetted commit is shown as plain text, and the eval checker fails any answer that links elsewhere.
+- **Claude Desktop, claude.ai and Cowork packaging.** Added `VERSION`, a reproducible zip builder (`scripts/build_release.py`), a GitHub Action that keeps `dist/cyberagents-exchange-finder.zip` in step with the sources, a pre-commit hook, gitleaks secret scanning and secret-file `.gitignore` rules.
 - **Follows the Exchange's current index layout** (2026-11-06): reads the `/api/index.json` manifest and every per-type JSONL file it lists, including later parts like `skills-2.jsonl`. The Exchange removed `listings.json` and `listings.jsonl` (website PR #182), and a stale CDN copy of `listings.json` was still being served, so before this change searches silently missed the newest listings. The skill no longer reads either old file.
 - Cards show the listing's license on the Project line. Lowercase `owner_type` values from the Exchange map to organization / personal account.
 - Evals: `check_picks.py` validates links against the manifest's files and supports `--expect`; scenarios can list `expect:` listings that must appear.

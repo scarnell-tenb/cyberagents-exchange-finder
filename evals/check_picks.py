@@ -16,7 +16,8 @@ TIERS = ("Tiers: contributed = baseline review only, not a comprehensive securit
 TYPE_DIRS = {"agents": "agent", "skills": "skill", "mcp-servers": "mcp-server", "playbooks": "playbook"}
 LINK = re.compile(r"https://exchange\.tenable\.com/(agents|skills|mcp-servers|playbooks)/([a-z0-9-]+)(\?[^\s)\]]*)?")
 ANY_URL_HOST = re.compile(r"https?://([A-Za-z0-9.-]+)")
-ALLOWED_HOSTS = {"exchange.tenable.com", "github.com", "api.github.com"}
+# Answers link only to Exchange listing pages, so traffic goes to the Exchange.
+ALLOWED_HOSTS = {"exchange.tenable.com"}
 TABLE_ROW =re.compile(r"^\s*\|.*\|\s*$", re.MULTILINE)
 INSTALL = re.compile(r"\b(install this|you should install)\b", re.IGNORECASE)
 
