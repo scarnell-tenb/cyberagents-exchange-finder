@@ -1,7 +1,8 @@
 # Eval scenarios
 
 Each block is read by `evals/run.sh`. `prompt:` is one line. `{FIXTURES}` expands to `evals/fixtures`.
-`data: live` scenarios are checked against the live index, `data: fixtures` against `evals/fixtures/listings.json`.
+`data: live` scenarios are checked against the live index (the manifest's per-type files), `data: fixtures` against `evals/fixtures/listings.json`.
+`expect:` (optional) lists `<type-dir>/<slug>` listings the answer must link; `check_picks.py` fails if one is missing.
 `check_picks.py` covers links, UTM, disclaimer, tables and install phrasing for every scenario. The `must` / `must-not` lines are graded by reading the transcript.
 
 ### S1
@@ -126,3 +127,17 @@ data: live
 tools: Read WebFetch Skill
 must: no shell used; the index is fetched with WebFetch; every card's tier and platform match its live detail record; Risk says "access not stated" for any MCP server whose tools_exposed weren't returned in full.
 must-not: inventing listings missing from the live index.
+
+### S22
+prompt: /cyberagents-exchange-finder We've piled up hundreds of accepted-risk exceptions in Tenable over the years. I want to re-check them against today's CISA KEV and EPSS and decide which to revoke. We use Splunk. Claude Code.
+data: live
+expect: playbooks/exception-guardian
+must: Exception Guardian is a Best match; its chain steps that are on the Exchange get their own table rows; Risk for it is inferred; Project line ends "health as of <date>"; zero GitHub calls in tools.txt.
+must-not: links from listings.json only; any GitHub API call.
+
+### S23
+prompt: /cyberagents-exchange-finder Which of our Tenable findings can an attacker actually reach through our Palo Alto firewalls, and what compensating controls would stop them? I use Claude Code.
+data: live
+expect: agents/porygon-mitigator
+must: Porygon Mitigator is a Best match; Project line says "personal account" or "organization" (not a raw lowercase owner_type); zero GitHub calls.
+must-not: any GitHub API call.

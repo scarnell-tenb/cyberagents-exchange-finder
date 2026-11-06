@@ -12,11 +12,11 @@ You say something like:
 
 The skill:
 
-1. Reads the Exchange's public listing index (`/api/listings.json`), live every time.
+1. Reads the Exchange's public listing index (the `/api/index.json` manifest and the per-type files it lists), live every time.
 2. Matches your task and tools to listings using the Exchange's own vocabulary (it knows "S1" means SentinelOne and "Tenable.sc" means Security Center).
 3. Ranks them in a fixed order: task fit → your tools → security domain → read-only before write-capable → vetted before contributed → runs on your AI tool. Tenable compatibility never counts as fit by itself.
 4. Confirms every pick against its full Exchange record, so no listing is invented or remembered.
-5. Checks each pick's GitHub repo metadata: archived? owner matches the listed author? pushed to in the last year? For vetted listings, has the code changed since the reviewed commit?
+5. Reads each pick's repo health from the Exchange's own snapshot (no GitHub calls): archived? owner matches the listed author? pushed to in the last year? For vetted listings, has the code changed since the reviewed commit? It checks GitHub directly only when a listing has no snapshot.
 6. Shows up to 5 cards. If nothing really fits, it says so.
 
 ## Prerequisites
@@ -57,7 +57,7 @@ Version 0.1.0 is fully tested on Claude Code. The Claude apps above are in previ
 
 - `/cyberagents-exchange-finder`, or plain language: "find me an MCP server for SentinelOne", "is there anything on the Exchange for KEV prioritization in Tenable?"
 - Mention your tools and your AI tool for better results. If your request is too vague, it asks one question.
-- **Fastest:** start with `/cyberagents-exchange-finder …`. In Claude Code that runs the skill on Claude Haiku: typically 30–55 seconds and about a cent per search. When the skill triggers from plain language, it runs on your session's model instead, which is slower (about 80 seconds) but equally accurate.
+- **Recommended:** start with `/cyberagents-exchange-finder …`. In Claude Code that runs the skill on Claude Haiku: typically 45–95 seconds and 1–2 cents per search, and it keeps to the answer format most reliably. When the skill triggers from plain language, it runs on your session's model instead: picks are just as accurate, but it takes about 2–3 minutes, costs about 50 cents, and now and then opens with a status sentence before the answer.
 - **No permission prompts:** the skill pre-approves only its own fetches to `exchange.tenable.com` and `api.github.com`, plus the three exact `jq` filters it uses. Nothing else is approved.
 - Follow-ups such as "compare 1 and 3" or "anything vetted?" reuse what it already fetched.
 
@@ -91,7 +91,8 @@ Every outbound request the skill makes:
 
 | Destination | Why | What's sent |
 |---|---|---|
-| `https://exchange.tenable.com/api/listings.jsonl` | listing index, one listing per line (falls back to `listings.json`) | plain GET, no parameters |
+| `https://exchange.tenable.com/api/index.json` | manifest: which index files exist | plain GET, no parameters |
+| `https://exchange.tenable.com/api/<type>.jsonl` (e.g. `skills.jsonl`, `skills-2.jsonl`) | listing index, one listing per line, one file per type | plain GET, no parameters |
 | `https://exchange.tenable.com/api/<type>/<slug>.json` | each pick's full record, including the Exchange's repo-health snapshot | plain GET, no parameters |
 | `https://exchange.tenable.com/llms-full.txt` | vocabulary lookup, only for an unrecognized term | plain GET, no parameters |
 | `https://api.github.com/repos/<owner>/<repo>` | fallback only: when the Exchange has no repo-health data for a pick | plain GET, unauthenticated, or read-only `gh repo view` if your GitHub CLI is signed in |
@@ -104,7 +105,7 @@ Every outbound request the skill makes:
 
 ### Locked-down networks
 
-Give the skill a local copy: download `https://exchange.tenable.com/api/listings.json` (and, optionally, detail records into `<folder>/<type>/<slug>.json`) on a connected machine, then say "use the local Exchange index at <path>". Results are labeled as coming from your local copy, and repo checks are skipped unless you say the network is available.
+Give the skill a local copy: download the files listed in `https://exchange.tenable.com/api/index.json` (and, optionally, detail records into `<folder>/<type>/<slug>.json`) on a connected machine, then say "use the local Exchange index at <path>". Results are labeled as coming from your local copy, and repo checks are skipped unless you say the network is available.
 
 ## Known limitations
 

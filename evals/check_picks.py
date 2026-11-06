@@ -1,11 +1,13 @@
-"""Property checks for a finder transcript. Usage: check_picks.py <transcript> [--index <listings.json>]"""
+"""Property checks for a finder transcript.
+Usage: check_picks.py <transcript> [--index <listings.json|.jsonl>] [--expect <type-dir>/<slug> ...]"""
 import argparse
 import json
 import re
 import sys
 import urllib.request
 
-LIVE_INDEX = "https://exchange.tenable.com/api/listings.json"
+# The live index is the manifest plus every per-type JSONL file it lists.
+MANIFEST = "https://exchange.tenable.com/api/index.json"
 UTM = "?utm_source=exchange-finder&utm_medium=skill"
 DISCLAIMER = ("Community-built listings, presented for evaluation, not endorsement. "
               "Review the code and permissions before using in production.")
@@ -24,13 +26,25 @@ def index_request(url):
     return urllib.request.Request(url, headers={"User-Agent": "exchange-finder-evals/0.1"})
 
 
-def load_index(source=LIVE_INDEX):
-    if source.startswith("https://"):
-        with urllib.request.urlopen(index_request(source), timeout=30) as r:
-            rows = json.load(r)
+def fetch_text(url):
+    with urllib.request.urlopen(index_request(url), timeout=30) as r:
+        return r.read().decode("utf-8")
+
+
+def parse_rows(text):
+    text = text.strip()
+    if text.startswith("["):
+        return json.loads(text)
+    return [json.loads(line) for line in text.splitlines() if line.strip()]
+
+
+def load_index(source=MANIFEST):
+    if source == MANIFEST:
+        manifest = json.loads(fetch_text(MANIFEST))
+        rows = [row for t in manifest["types"] for f in t["files"] for row in parse_rows(fetch_text(f["url"]))]
     else:
         with open(source) as f:
-            rows = json.load(f)
+            rows = parse_rows(f.read())
     return {(row["type"], row["slug"]) for row in rows}
 
 
@@ -39,9 +53,13 @@ def outside_at_a_glance(text):
     return re.sub(r"\*\*At a glance\*\*.*?(?=^\*\*[A-Z])", "", text, flags=re.S | re.M)
 
 
-def check(text, index):
+def check(text, index, expect=()):
     failures = []
     links = LINK.findall(text)
+    shown = {f"{d}/{s}" for d, s, _ in links}
+    for ref in expect:
+        if ref not in shown:
+            failures.append(f"expected listing not shown: {ref}")
     for type_dir, slug, query in links:
         ref = f"{type_dir}/{slug}"
         if (TYPE_DIRS[type_dir], slug) not in index:
@@ -66,10 +84,11 @@ def check(text, index):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("transcript")
-    p.add_argument("--index", default=LIVE_INDEX)
+    p.add_argument("--index", default=MANIFEST)
+    p.add_argument("--expect", nargs="*", default=[])
     args = p.parse_args()
     with open(args.transcript) as f:
-        failures = check(f.read(), load_index(args.index))
+        failures = check(f.read(), load_index(args.index), args.expect)
     for line in failures:
         print(f"FAIL {line}")
     print("PASS" if not failures else f"{len(failures)} failure(s)")

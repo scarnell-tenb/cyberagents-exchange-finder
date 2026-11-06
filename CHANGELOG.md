@@ -2,6 +2,9 @@
 
 ## 0.1.0 — unreleased
 
+- **Follows the Exchange's current index layout** (2026-11-06): reads the `/api/index.json` manifest and every per-type JSONL file it lists, including later parts like `skills-2.jsonl`. The Exchange removed `listings.json` and `listings.jsonl` (website PR #182), and a stale CDN copy of `listings.json` was still being served, so before this change searches silently missed the newest listings. The skill no longer reads either old file.
+- Cards show the listing's license on the Project line. Lowercase `owner_type` values from the Exchange map to organization / personal account.
+- Evals: `check_picks.py` validates links against the manifest's files and supports `--expect`; scenarios can list `expect:` listings that must appear.
 - **Uses the Exchange's agent-friendly API** (live since 2026-10-28): reads `listings.jsonl` and takes repo health and vetted drift from each listing's `repo` object, so a normal search makes no GitHub calls. Older deployments and listings without health data fall back to the previous GitHub checks.
 
 First version: find and evaluate CyberAgents Exchange listings for a security task.

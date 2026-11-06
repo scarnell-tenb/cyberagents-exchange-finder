@@ -90,6 +90,43 @@ class CheckPicksTest(unittest.TestCase):
     def test_no_picks_still_requires_disclaimer_only_when_picks_shown(self):
         self.assertEqual(self.check("Could you tell me which tool you use?\n"), [])
 
+    def test_expected_listing_present_passes(self):
+        failures = check_picks.check(good_transcript(), check_picks.load_index(self.index_path),
+                                     expect=["skills/good-skill"])
+        self.assertEqual(failures, [])
+
+    def test_expected_listing_missing_fails_naming_it(self):
+        failures = check_picks.check(good_transcript(), check_picks.load_index(self.index_path),
+                                     expect=["playbooks/exception-guardian"])
+        self.assertEqual(failures, ["expected listing not shown: playbooks/exception-guardian"])
+
+    def test_jsonl_index_loads(self):
+        fd, path = tempfile.mkstemp(suffix=".jsonl")
+        with os.fdopen(fd, "w") as f:
+            f.write("\n".join(json.dumps(r) for r in INDEX) + "\n")
+        try:
+            self.assertEqual(check_picks.load_index(path), {("skill", "good-skill"), ("mcp-server", "good-mcp")})
+        finally:
+            os.remove(path)
+
+    def test_live_index_reads_every_file_in_manifest(self):
+        manifest = {"types": [
+            {"type": "skill", "files": [{"url": "https://x.test/api/skills.jsonl"},
+                                        {"url": "https://x.test/api/skills-2.jsonl"}]},
+            {"type": "playbook", "files": [{"url": "https://x.test/api/playbooks.jsonl"}]}]}
+        bodies = {
+            check_picks.MANIFEST: json.dumps(manifest),
+            "https://x.test/api/skills.jsonl": '{"type":"skill","slug":"a"}\n',
+            "https://x.test/api/skills-2.jsonl": '{"type":"skill","slug":"b"}\n',
+            "https://x.test/api/playbooks.jsonl": '{"type":"playbook","slug":"c"}\n'}
+        real = check_picks.fetch_text
+        check_picks.fetch_text = lambda url: bodies[url]
+        try:
+            self.assertEqual(check_picks.load_index(check_picks.MANIFEST),
+                             {("skill", "a"), ("skill", "b"), ("playbook", "c")})
+        finally:
+            check_picks.fetch_text = real
+
 
 if __name__ == "__main__":
     unittest.main()

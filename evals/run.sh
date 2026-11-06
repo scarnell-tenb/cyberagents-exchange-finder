@@ -11,6 +11,7 @@ prompt="$(printf '%s\n' "$block" | sed -n 's/^prompt: //p')"
 prompt="${prompt//\{FIXTURES\}/$fixtures}"
 data="$(printf '%s\n' "$block" | sed -n 's/^data: //p')"
 tools="$(printf '%s\n' "$block" | sed -n 's/^tools: //p')"
+expect="$(printf '%s\n' "$block" | sed -n 's/^expect: //p')"
 [ -n "$tools" ] || tools='Bash(curl:*) Bash(jq:*) Bash(grep:*) Read WebFetch Skill'
 read -r -a tool_args <<< "$tools"
 
@@ -43,4 +44,5 @@ PY
 
 index_args=()
 [ "$data" = "fixtures" ] && index_args=(--index "$fixtures/listings.json")
+[ -n "$expect" ] && { read -r -a exp <<< "$expect"; index_args+=(--expect "${exp[@]}"); }
 python3 -I "$repo/evals/check_picks.py" "$out/transcript.md" ${index_args[@]+"${index_args[@]}"} | tee "$out/check.txt"
