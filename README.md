@@ -21,7 +21,7 @@ The skill:
 
 ## Prerequisites
 
-- Claude Code (see Install).
+- Claude Code, **or** Claude Desktop / claude.ai / Cowork on a plan with Skills and code execution turned on (Settings → Capabilities). See Install.
 - Network access to `exchange.tenable.com` (plus `api.github.com` for the rare repo-check fallback), **or** a local copy of the Exchange index (see "Locked-down networks").
 - A shell with `curl` and `jq` is recommended. Both come with macOS 15+ and most Linux systems, so there's nothing to install. Claude Code asks once for permission to run each. Without them, the skill falls back to your tool's web fetch, which is slower.
 
